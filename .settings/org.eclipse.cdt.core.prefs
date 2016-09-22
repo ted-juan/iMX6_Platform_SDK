@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/0.1682234213/append=true
+environment/project/0.1682234213/appendContributed=true
+environment/project/0.1682234213/build_sdk/delimiter=\:
+environment/project/0.1682234213/build_sdk/operation=replace
+environment/project/0.1682234213/build_sdk/value=PATH\="$PATH\:/home/ahmad/iMX6_Platform_SDK/tools"
