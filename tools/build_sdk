@@ -142,9 +142,9 @@ do_build()
     if [ "$build_flag" = y ]; then
         make -j "$parallel_jobs" $app_name TARGET=$soc_name BOARD=$board_name BOARD_REVISION=$board_rev TEST=$test_name
         result=$?
-        
+
         build_name="${soc_name} ${board_name} rev_${board_rev} ${test_name}"
-        
+
         if [ $result -eq 0 ]; then
             printf "\n${color_passed}Build $build_name passed!${color_default}"
         else
@@ -217,6 +217,9 @@ while [ $# -gt 0 ]; do
                             if [ "$app_name" = "$1" ]; then
                                 app_name=$2
                                 shift
+								if [ "$app_name" = "freertos" ]; then
+									test_name="epit"
+								fi
                             fi
                             # Clear app name if "all" is specified since the main makefile
                             # will automatically build all apps if no target is specified.
@@ -265,9 +268,9 @@ for (( i=0 ; i<${#valid_builds[*]} ; i+=3 )); do
                 echo "Not building ${valid_builds[i]}_${valid_builds[i+1]}_rev_${valid_builds[i+2]} test=${test_name}"
             fi
             continue
-        fi 
+        fi
     fi
-    
+
 #    board_name=${valid_builds[i+1]}
     if [ ${board_name_arg} != "all" ]; then
         if [ ${board_name_arg} != ${valid_builds[i+1]} ]; then # continue: not our -board
@@ -275,9 +278,9 @@ for (( i=0 ; i<${#valid_builds[*]} ; i+=3 )); do
                 echo "Not building ${valid_builds[i]}_${valid_builds[i+1]}_rev_${valid_builds[i+2]} test=${test_name}"
             fi
             continue
-        fi 
+        fi
     fi
-    
+
 #    board_rev=${valid_builds[i+2]}
     if [ ${board_rev_arg} != "all" ]; then
         if [ ${board_rev_arg} != ${valid_builds[i+2]} ]; then # continue: not our -board_rev
@@ -285,13 +288,13 @@ for (( i=0 ; i<${#valid_builds[*]} ; i+=3 )); do
                 echo "Not building ${valid_builds[i]}_${valid_builds[i+1]}_rev_${valid_builds[i+2]} test=${test_name}"
             fi
             continue
-        fi 
+        fi
     fi
 
     if [ "$list_flag" = y ]; then
         echo "Build ${valid_builds[i]}_${valid_builds[i+1]}_rev_${valid_builds[i+2]} test=${test_name}"
     fi
-    
+
     specified_builds+=(${valid_builds[i]} ${valid_builds[i+1]} ${valid_builds[i+2]})
 
 done
@@ -307,7 +310,7 @@ if [ "$list_flag" = n ]; then
         board_name=${specified_builds[i+1]}
         board_rev=${specified_builds[i+2]}
         do_build
-        
+
         # Add newline between builds
         echo
     done

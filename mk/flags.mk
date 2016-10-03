@@ -36,7 +36,7 @@
 # Add '-O0' at the end of this line to turn off optimizations.  This can make
 # debugging (especially asm) much easier but it greatly increases the size of
 # the code and reduces performance.
-CDEBUG = -g -O0 -DDEBUG=1
+CDEBUG = -g -O0 -DDEBUG=1 -ggdb
 
 # Turns on all -O2 except size increasers.
 # Any CDEBUG settings will come after this and can be used to override.
@@ -114,6 +114,12 @@ endif
 # C flags. Set C99 mode.
 CFLAGS += $(COMMON_FLAGS)
 CFLAGS += $(C99_FLAGS)
+
+# AS flags
+ASFLAGS = -march=armv7-a -mcpu=$(CPU) -mfpu=neon -mfloat-abi=softfp
+ifeq "$(DEBUG)" "1"
+	ASFLAGS += -g
+endif
 
 # C++ flags. Disable exceptions and RTTI.
 CXXFLAGS += $(COMMON_FLAGS)

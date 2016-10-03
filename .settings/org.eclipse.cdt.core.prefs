@@ -4,3 +4,17 @@ environment/project/0.1682234213/appendContributed=true
 environment/project/0.1682234213/build_sdk/delimiter=\:
 environment/project/0.1682234213/build_sdk/operation=replace
 environment/project/0.1682234213/build_sdk/value=PATH\="$PATH\:/home/ahmad/iMX6_Platform_SDK/tools"
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/CROSS_COMPILE/delimiter=\:
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/CROSS_COMPILE/operation=append
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/CROSS_COMPILE/value=/home/ted/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_9-2015q3/bin/arm-none-eabi-
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/CROSS_LIB1/delimiter=\:
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/CROSS_LIB1/operation=append
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/CROSS_LIB1/value=/home/ted/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_9-2015q3/arm-none-eabi/lib
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/CROSS_LIB2/delimiter=\:
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/CROSS_LIB2/operation=append
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/CROSS_LIB2/value=/home/ted/ti/ccsv6/tools/compiler/gcc-arm-none-eabi-4_9-2015q3/lib/gcc/arm-none-eabi/4.9.3
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/DEBUG/delimiter=\:
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/DEBUG/operation=append
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/DEBUG/value=1
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/append=true
+environment/project/ilg.gnuarmeclipse.managedbuild.cross.toolchain.base.1079253319/appendContributed=true

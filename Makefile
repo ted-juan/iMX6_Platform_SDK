@@ -23,6 +23,7 @@
 #  - sdk
 #  - board
 #  - sdk_unit_test
+#  - freertos
 #  - power_modes_test
 #  - obds
 #  - gpu_demo
@@ -35,6 +36,7 @@
 #  - clean_sdk
 #  - clean_board
 #  - clean_sdk_unit_test
+#  - clean_freertos
 #  - clean_power_modes_test
 #  - clean_obds
 #  - clean_gpu_demo
@@ -77,6 +79,7 @@ ALL_APPS = \
     ping \
     power_modes_test \
     sdk_unit_test \
+    freertos \
     stream \
     usb_hid_mouse
 

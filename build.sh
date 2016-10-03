@@ -6,4 +6,4 @@ export CXXFLAGS="-g"
 export CROSS_COMPILE=arm-none-eabi-
 export CROSS_LIB1=${TOOLCHAIN_PATH}arm-none-eabi/lib
 export CROSS_LIB2=${TOOLCHAIN_PATH}lib/gcc/arm-none-eabi/5.4.1
-./tools/build_sdk -t mx6sdl -b sabre_ai -rev a -r epit
+./tools/build_sdk -t mx6sdl -b sabre_ai -rev a -a freertos

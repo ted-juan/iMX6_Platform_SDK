@@ -48,7 +48,7 @@ uint32_t g_debug_uart_port = HW_UART1;
 #elif defined(BOARD_SABRE_LITE)
 uint32_t g_debug_uart_port = HW_UART2;
 #else
-uint32_t g_debug_uart_port = HW_UART4;
+uint32_t g_debug_uart_port = HW_UART1;
 #endif
 
 uint32_t g_system_timer_port = HW_EPIT1;

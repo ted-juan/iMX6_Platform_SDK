@@ -152,7 +152,7 @@ void epit_init(uint32_t instance, uint32_t clock_src, uint32_t prescaler,
     uint32_t base = REGS_EPIT_BASE(instance);
 
     // enable the source clocks to the EPIT port 
-    clock_gating_config(base, CLOCK_ON);
+   clock_gating_config(base, CLOCK_ON);
 
     // start with a known state by disabling and reseting the module 
     HW_EPIT_CR_WR(instance, BM_EPIT_CR_SWR);
