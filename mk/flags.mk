@@ -116,7 +116,7 @@ CFLAGS += $(COMMON_FLAGS)
 CFLAGS += $(C99_FLAGS)
 
 # AS flags
-ASFLAGS = -march=armv7-a -mcpu=$(CPU) -mfpu=neon -mfloat-abi=softfp
+ASFLAGS = -march=armv7-a -mcpu=$(CPU) -mfpu=neon -mfloat-abi=softfp -EL
 ifeq "$(DEBUG)" "1"
 	ASFLAGS += -g
 endif

@@ -36,12 +36,43 @@
 #include "sdk_version.h"
 #include "print_clock_info.h"
 #include "print_version.h"
-#include "FreeRTOSConfig.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 extern int SDK_TEST(void);
 
 INT8U   DBG_SysInfo = DBG_LEVEL1;
 struct SYS_IO_BUF	SYS_OutBuf;
+
+static void SYS_Task1(void *pvParameters)
+{
+	const uint32_t xFrequency = 100;
+	TickType_t xLastWakeTime = xTaskGetTickCount();
+
+	pvParameters= pvParameters; /* avoid compile warning */
+
+	while(1)
+	{
+		printf("TASK1\n");
+		vTaskDelayUntil(&xLastWakeTime, xFrequency);
+		//vTaskDelay(1);
+	}
+}
+
+static void SYS_Task2(void *pvParameters)
+{
+	const uint32_t xFrequency = 100;
+	TickType_t xLastWakeTime = xTaskGetTickCount();
+
+	pvParameters= pvParameters; /* avoid compile warning */
+
+	while(1)
+	{
+		printf("TASK2\n");
+		vTaskDelayUntil(&xLastWakeTime, xFrequency);
+		//vTaskDelay(1);
+	}
+}
 
 /*
 *============================================================================
@@ -67,55 +98,20 @@ INT32S SYS_Init(void)
 //    SYS_NoneCacheRegionInit();
 //    SYS_MEM_Init();
 
-//    SDK_TEST();
-    if ((ret = OS_TimerInit())!=SYSOK)
-    {
-        SYS_DEBUGP(DBG_SysInfo, DBG_MASK1,
-            ("Cannot create timer! %d",ret));
-    }
-#if 0
 	// Initialise the xLastWakeTime variable with the current time.
 	xLastWakeTime = xTaskGetTickCount();
 
 	printf("start timer= %d\n", xLastWakeTime);
 
     /*Create the system task*/
-	err = xTaskCreate(SYS_Task, "sys_task", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
+	err = xTaskCreate(SYS_Task1, "sys_task1", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
+	err |= xTaskCreate(SYS_Task2, "sys_task2", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
 
-    if (err == pdPASS)
+	if (err == pdPASS)
         return SYSOK;
     else
         return SYSERR;
-#endif
-        return SYSOK;
 }
-
-#if 0
-static void SYS_Task(void *pvParameters)
-{
-
-	const uint32_t xFrequency = 1;
-
-	pvParameters= pvParameters; /* avoid compile warning */
-
-
-	while(1)
-	{
-		printf("TASK1\n");
-//		vTaskDelayUntil(&xLastWakeTime, xFrequency);
-		//vTaskDelay(1);
-	}
-}
-
-
-
-static void  SYS_HwInit(void)
-{
-    serial_init();
-	//test_printf();
-}
-#endif
-
 
 /*!
  * main function that decides which tests to run and prompts the user before
@@ -143,13 +139,16 @@ INT32S main(void)
     printf("==========================================\n");
     printf("System running!....\n");
 
+    // Run the unit test function.
+    //SDK_TEST();
+
     /* Create system tasks */
     ret = SYS_Init();
     SYS_ASSERT(("<1> Cannot initial system\n"),ret==SYSOK);
 
-	//vTaskStartScheduler();
-    // Run the unit test function.
-    //SDK_TEST();
+	vTaskStartScheduler();
+
+	while(1);
 
     return 0;
 }

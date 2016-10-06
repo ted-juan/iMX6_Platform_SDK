@@ -142,11 +142,5 @@ void vApplicationMallocFailedHook( void )
 	for( ;; );
 }
 
-void vConfigureTickInterrupt( void )
-{
-}
 
-void vClearTickInterrupt( void )
-{
-}
 

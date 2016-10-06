@@ -328,7 +328,7 @@ vApplicationIRQHandler:
 
 	POP {PC}
 
-
+.align 4
 ulICCIARConst:	.word ulICCIAR
 ulICCEOIRConst:	.word ulICCEOIR
 ulICCPMRConst: .word ulICCPMR

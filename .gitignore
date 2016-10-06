@@ -34,6 +34,12 @@
 patches-*
 .stgit-edit.txt
 
+
+# eclipse generated dirs
+.cproject*
+.project*
+.setting*
+
 # quilt's files
 patches
 series

@@ -1,6 +1,7 @@
 include $(SDK_ROOT)/mk/common.mk
 
 
+ifeq "$(FREERTOS)" "1"
 SOURCES = \
 	src/abort_handler.c \
 	src/arm_abort.S \
@@ -12,6 +13,18 @@ SOURCES = \
 	src/mmu.c \
 	src/startup.S \
 	src/vectors.S 
+else
+SOURCES = \
+	src/abort_handler.c \
+	src/arm_abort.S \
+	src/armv7_cache.c \
+	src/ccm_pll.c \
+	src/cortexA9.s \
+	src/gic.c \
+	src/interrupt.c \
+	src/mmu.c \
+	src/startup.S
+endif
 	
 
 

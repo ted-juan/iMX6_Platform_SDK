@@ -174,6 +174,7 @@ define SOURCES
     src/imx6_main.c
     src/imx6_timer.c
     src/imx6_hook.c
+    src/imx6_vectors.c
 	$(RTOS_PATH)/tasks.c
 	$(RTOS_PATH)/queue.c
 	$(RTOS_PATH)/list.c
