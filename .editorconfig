@@ -1,0 +1,31 @@
+; indicate this is the root of the project
+root = true
+
+[*]
+charset = utf-8
+
+[*.c]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.h]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.cpp]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.cxx]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[Makefile]
+indent_style = tab
+indent_size = 4
+trim_trailing_whitespace = true
+
