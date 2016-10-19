@@ -43,6 +43,8 @@ extern int SDK_TEST(void);
 
 INT8U   DBG_SysInfo = DBG_LEVEL1;
 struct SYS_IO_BUF	SYS_OutBuf;
+extern void gpio_buzzer(int);
+extern void gpio_beep(void);
 
 static void SYS_Task1(void *pvParameters)
 {
@@ -55,6 +57,7 @@ static void SYS_Task1(void *pvParameters)
 	{
 		printf("TASK1\n");
 		vTaskDelayUntil(&xLastWakeTime, xFrequency);
+
 		//vTaskDelay(1);
 	}
 }
@@ -70,6 +73,8 @@ static void SYS_Task2(void *pvParameters)
 	{
 		printf("TASK2\n");
 		vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        gpio_beep();
+
 		//vTaskDelay(1);
 	}
 }

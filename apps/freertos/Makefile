@@ -146,7 +146,7 @@ endif
 ifeq "$(BOARD)" "evk"
     SUBDIRS += \
 	$(SDK_LIB_ROOT)/drivers/usb/test \
-       	$(SDK_LIB_ROOT)/drivers/spi/test 
+       	$(SDK_LIB_ROOT)/drivers/spi/test
 endif
 
 # SATA is only available on the mx6dq.
@@ -162,7 +162,7 @@ ifeq "$(TARGET)" "mx6sl"
     SUBDIRS += $(SDK_LIB_ROOT)/drivers/spdc/test
     SUBDIRS += $(SDK_LIB_ROOT)/drivers/camera/test
     SUBDIRS += $(SDK_LIB_ROOT)/drivers/dcp/test
-    SUBDIRS += $(SDK_LIB_ROOT)/drivers/fec/test	
+    SUBDIRS += $(SDK_LIB_ROOT)/drivers/fec/test
 endif
 
 # Local source files.
@@ -175,13 +175,14 @@ define SOURCES
     src/imx6_timer.c
     src/imx6_hook.c
     src/imx6_vectors.c
+    src/imx6_gpio.c
 	$(RTOS_PATH)/tasks.c
 	$(RTOS_PATH)/queue.c
 	$(RTOS_PATH)/list.c
 	$(RTOS_PATH)/timers.c
 	$(RTOS_PATH)/portable/MemMang/heap_2.c
-	$(RTOS_PATH)/portable/GCC/ARM_CA9/port.c 
-	$(RTOS_PATH)/portable/GCC/ARM_CA9/portASM.S 
+	$(RTOS_PATH)/portable/GCC/ARM_CA9/port.c
+	$(RTOS_PATH)/portable/GCC/ARM_CA9/portASM.S
 endef
 #  src/all_test.c
 
