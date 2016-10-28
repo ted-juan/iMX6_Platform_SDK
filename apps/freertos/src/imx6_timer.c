@@ -22,41 +22,6 @@ static uint32_t epit_instance = HW_EPIT2;
 static volatile uint8_t g_wait_for_irq;
 extern irq_hdlr_t g_interrupt_handlers[IMX_INTERRUPT_COUNT];
 extern volatile uint32_t g_vectNum[4];
-/*
-*============================================================================
-*   Public Function: OS_TimerInit
-*
-*      The ISR used for the scheduler tick.
-*
-*   Interface parameter:
-*		Input:
-*			none
-*
-*		Output:
-*			none
-*
-*============================================================================
-*/
-
-/*
- * The ISR used for the scheduler tick.
- */
-void vTickISR(void)
-{
-    g_wait_for_irq = 0;
-	 /* clear the compare event flag */
-	epit_get_compare_event(epit_instance);
-
-#if 1
-    /* Increment the RTOS tick count, then look for the highest priority
-	task that is ready to run. */
-	__asm volatile("bl xTaskIncrementTick");
-
-	#if configUSE_PREEMPTION == 1
-		__asm volatile("bl vTaskSwitchContext");
-	#endif
-#endif
-}
 
 /*
 *============================================================================

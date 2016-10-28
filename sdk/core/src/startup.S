@@ -69,6 +69,16 @@ _start:
     and     r2, r2, #3        @ mask off, leaving CPU ID field
     mov     r5, r2		      @ save cpu id for later
     
+    @ check cpu id - cpu0 is primary cpu
+    cmp     r5, #0
+    beq     _gg
+    movw    r0,  #0xc000     
+    movt    r0,  #0x020a
+    mov     r1, #0x1000
+    str     r1, [r0]
+
+_gg:
+
     mul     r3, r2, r1
     sub     r0, r0, r3
   

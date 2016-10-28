@@ -36,6 +36,7 @@
 #include "sdk_version.h"
 #include "print_clock_info.h"
 #include "print_version.h"
+#include "cpu_utility/cpu_utility.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -45,6 +46,7 @@ INT8U   DBG_SysInfo = DBG_LEVEL1;
 struct SYS_IO_BUF	SYS_OutBuf;
 extern void gpio_buzzer(int);
 extern void gpio_beep(void);
+extern void multicore_test(void);
 
 static void SYS_Task1(void *pvParameters)
 {
@@ -66,8 +68,20 @@ static void SYS_Task2(void *pvParameters)
 {
 	const uint32_t xFrequency = 100;
 	TickType_t xLastWakeTime = xTaskGetTickCount();
+    int *gpio_addr = (int *)0x020ac000;
+    int data=0;
 
 	pvParameters= pvParameters; /* avoid compile warning */
+
+    gpio_beep();
+    gpio_beep();
+
+#if 0
+    __asm volatile (
+    "ldr     r10,=_start \n"
+    "blx     r10  \n");
+#endif
+
 
 	while(1)
 	{
@@ -75,6 +89,10 @@ static void SYS_Task2(void *pvParameters)
 		vTaskDelayUntil(&xLastWakeTime, xFrequency);
         gpio_beep();
 
+#if 0
+        data = *gpio_addr;
+        *gpio_addr |= 0x1000;
+#endif
 		//vTaskDelay(1);
 	}
 }
@@ -126,6 +144,10 @@ INT32S SYS_Init(void)
 INT32S main(void)
 {
 	INT32S ret;
+    uint32_t cpu_id = cpu_get_current();
+
+    while (cpu_id != 0)
+        gpio_beep();
 
     /* hardware initialize */
     platform_init();
@@ -134,6 +156,8 @@ INT32S main(void)
 
     show_freq();
     show_ddr_config();
+
+//    multicore_test();
 
     /*clear output buffer memory*/
     memset((CHAR*)&SYS_OutBuf,0,sizeof(struct SYS_IO_BUF));

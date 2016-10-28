@@ -182,6 +182,135 @@ void src_iomux_config()
 
 void uart1_iomux_config()
 {
+    // Config usdhc3.SD3_DATA6 to pad SD3_DATA6(E13)
+    // HW_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA6_WR(0x00000000);
+    // HW_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6_WR(0x0001B0B0);
+    // Mux Register:
+    // IOMUXC_SW_MUX_CTL_PAD_SD3_DATA6(0x020E032C)
+    //   SION [4] - Software Input On Field Reset: DISABLED
+    //              Force the selected mux mode Input path no matter of MUX_MODE functionality.
+    //     DISABLED (0) - Input Path is determined by functionality of the selected mux mode (regular).
+    //     ENABLED (1) - Force input path of pad.
+    //   MUX_MODE [2:0] - MUX Mode Select Field Reset: ALT5
+    //                    Select iomux modes to be used for pad.
+    //     ALT0 (0) - Select instance: usdhc3 signal: SD3_DATA6
+    //     ALT1 (1) - Select instance: uart1 signal: UART1_RX_DATA
+    //     ALT5 (5) - Select instance: gpio6 signal: GPIO6_IO18
+    HW_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA6_WR(
+            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA6_SION_V(DISABLED) |
+            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA6_MUX_MODE_V(ALT0));
+    // Pad Control Register:
+    // IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6(0x020E0714)
+    //   HYS [16] - Hysteresis Enable Field Reset: ENABLED
+    //     DISABLED (0) - CMOS input
+    //     ENABLED (1) - Schmitt trigger input
+    //   PUS [15:14] - Pull Up / Down Config. Field Reset: 100K_OHM_PU
+    //     100K_OHM_PD (0) - 100K Ohm Pull Down
+    //     47K_OHM_PU (1) - 47K Ohm Pull Up
+    //     100K_OHM_PU (2) - 100K Ohm Pull Up
+    //     22K_OHM_PU (3) - 22K Ohm Pull Up
+    //   PUE [13] - Pull / Keep Select Field Reset: PULL
+    //     KEEP (0) - Keeper Enabled
+    //     PULL (1) - Pull Enabled
+    //   PKE [12] - Pull / Keep Enable Field Reset: ENABLED
+    //     DISABLED (0) - Pull/Keeper Disabled
+    //     ENABLED (1) - Pull/Keeper Enabled
+    //   ODE [11] - Open Drain Enable Field Reset: DISABLED
+    //              Enables open drain of the pin.
+    //     DISABLED (0) - Output is CMOS.
+    //     ENABLED (1) - Output is Open Drain.
+    //   SPEED [7:6] - Speed Field Reset: 100MHZ
+    //     RESERVED0 (0) - Reserved
+    //     50MHZ (1) - Low (50 MHz)
+    //     100MHZ (2) - Medium (100 MHz)
+    //     200MHZ (3) - Maximum (200 MHz)
+    //   DSE [5:3] - Drive Strength Field Reset: 40_OHM
+    //     HIZ (0) - HI-Z
+    //     240_OHM (1) - 240 Ohm
+    //     120_OHM (2) - 120 Ohm
+    //     80_OHM (3) - 80 Ohm
+    //     60_OHM (4) - 60 Ohm
+    //     48_OHM (5) - 48 Ohm
+    //     40_OHM (6) - 40 Ohm
+    //     34_OHM (7) - 34 Ohm
+    //   SRE [0] - Slew Rate Field Reset: SLOW
+    //             Slew rate control.
+    //     SLOW (0) - Slow Slew Rate
+    //     FAST (1) - Fast Slew Rate
+    HW_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6_WR(
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6_HYS_V(ENABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6_PUS_V(100K_OHM_PU) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6_PUE_V(PULL) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6_PKE_V(ENABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6_ODE_V(DISABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6_SPEED_V(100MHZ) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6_DSE_V(40_OHM) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6_SRE_V(SLOW));
+
+    // Config usdhc3.SD3_DATA7 to pad SD3_DATA7(F13)
+    // HW_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA7_WR(0x00000000);
+    // HW_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7_WR(0x0001B0B0);
+    // Mux Register:
+    // IOMUXC_SW_MUX_CTL_PAD_SD3_DATA7(0x020E0330)
+    //   SION [4] - Software Input On Field Reset: DISABLED
+    //              Force the selected mux mode Input path no matter of MUX_MODE functionality.
+    //     DISABLED (0) - Input Path is determined by functionality of the selected mux mode (regular).
+    //     ENABLED (1) - Force input path of pad.
+    //   MUX_MODE [2:0] - MUX Mode Select Field Reset: ALT5
+    //                    Select iomux modes to be used for pad.
+    //     ALT0 (0) - Select instance: usdhc3 signal: SD3_DATA7
+    //     ALT1 (1) - Select instance: uart1 signal: UART1_TX_DATA
+    //     ALT5 (5) - Select instance: gpio6 signal: GPIO6_IO17
+    HW_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA7_WR(
+            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA7_SION_V(DISABLED) |
+            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA7_MUX_MODE_V(ALT0));
+    // Pad Control Register:
+    // IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7(0x020E0718)
+    //   HYS [16] - Hysteresis Enable Field Reset: ENABLED
+    //     DISABLED (0) - CMOS input
+    //     ENABLED (1) - Schmitt trigger input
+    //   PUS [15:14] - Pull Up / Down Config. Field Reset: 100K_OHM_PU
+    //     100K_OHM_PD (0) - 100K Ohm Pull Down
+    //     47K_OHM_PU (1) - 47K Ohm Pull Up
+    //     100K_OHM_PU (2) - 100K Ohm Pull Up
+    //     22K_OHM_PU (3) - 22K Ohm Pull Up
+    //   PUE [13] - Pull / Keep Select Field Reset: PULL
+    //     KEEP (0) - Keeper Enabled
+    //     PULL (1) - Pull Enabled
+    //   PKE [12] - Pull / Keep Enable Field Reset: ENABLED
+    //     DISABLED (0) - Pull/Keeper Disabled
+    //     ENABLED (1) - Pull/Keeper Enabled
+    //   ODE [11] - Open Drain Enable Field Reset: DISABLED
+    //              Enables open drain of the pin.
+    //     DISABLED (0) - Output is CMOS.
+    //     ENABLED (1) - Output is Open Drain.
+    //   SPEED [7:6] - Speed Field Reset: 100MHZ
+    //     RESERVED0 (0) - Reserved
+    //     50MHZ (1) - Low (50 MHz)
+    //     100MHZ (2) - Medium (100 MHz)
+    //     200MHZ (3) - Maximum (200 MHz)
+    //   DSE [5:3] - Drive Strength Field Reset: 40_OHM
+    //     HIZ (0) - HI-Z
+    //     240_OHM (1) - 240 Ohm
+    //     120_OHM (2) - 120 Ohm
+    //     80_OHM (3) - 80 Ohm
+    //     60_OHM (4) - 60 Ohm
+    //     48_OHM (5) - 48 Ohm
+    //     40_OHM (6) - 40 Ohm
+    //     34_OHM (7) - 34 Ohm
+    //   SRE [0] - Slew Rate Field Reset: SLOW
+    //             Slew rate control.
+    //     SLOW (0) - Slow Slew Rate
+    //     FAST (1) - Fast Slew Rate
+    HW_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7_WR(
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7_HYS_V(ENABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7_PUS_V(100K_OHM_PU) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7_PUE_V(PULL) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7_PKE_V(ENABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7_ODE_V(DISABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7_SPEED_V(100MHZ) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7_DSE_V(40_OHM) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7_SRE_V(SLOW));
 };
 
 void uart5_iomux_config()

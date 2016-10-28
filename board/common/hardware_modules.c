@@ -46,7 +46,7 @@
 #if defined(BOARD_SMART_DEVICE)
 uint32_t g_debug_uart_port = HW_UART1;
 #elif defined(BOARD_SABRE_LITE)
-uint32_t g_debug_uart_port = HW_UART2;
+uint32_t g_debug_uart_port = HW_UART1;
 #else
 uint32_t g_debug_uart_port = HW_UART1;
 #endif
