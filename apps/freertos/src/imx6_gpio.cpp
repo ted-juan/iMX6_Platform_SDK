@@ -23,5 +23,7 @@ void gpio_beep(void)
 
     buzzer = !buzzer;
 
+    buzzer = true;
     hal_delay_us(500000);
+    buzzer = false;
 }
