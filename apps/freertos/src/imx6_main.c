@@ -73,26 +73,13 @@ static void SYS_Task2(void *pvParameters)
 
 	pvParameters= pvParameters; /* avoid compile warning */
 
-    gpio_beep();
-    gpio_beep();
-
-#if 0
-    __asm volatile (
-    "ldr     r10,=_start \n"
-    "blx     r10  \n");
-#endif
-
 
 	while(1)
 	{
 		printf("TASK2\n");
 		vTaskDelayUntil(&xLastWakeTime, xFrequency);
-        gpio_beep();
+        //gpio_beep();
 
-#if 0
-        data = *gpio_addr;
-        *gpio_addr |= 0x1000;
-#endif
 		//vTaskDelay(1);
 	}
 }
@@ -146,9 +133,6 @@ INT32S main(void)
 	INT32S ret;
     uint32_t cpu_id = cpu_get_current();
 
-    while (cpu_id != 0)
-        gpio_beep();
-
     /* hardware initialize */
     platform_init();
 
@@ -156,8 +140,6 @@ INT32S main(void)
 
     show_freq();
     show_ddr_config();
-
-//    multicore_test();
 
     /*clear output buffer memory*/
     memset((CHAR*)&SYS_OutBuf,0,sizeof(struct SYS_IO_BUF));
@@ -168,7 +150,11 @@ INT32S main(void)
     printf("==========================================\n");
     printf("System running!....\n");
 
+    gpio_beep();
+
     // Run the unit test function.
+    //multicore_test();
+    //epit_test();
     //SDK_TEST();
 
     /* Create system tasks */
