@@ -28,6 +28,7 @@
 */
 
 #include <iomux_config.h>
+#include "registers/regsiomuxc.h"
 
 // Function to configure iomux for i.MX6SDL board SABRE AI rev. A.
 void iomux_config(void)
@@ -198,7 +199,7 @@ void uart1_iomux_config()
     //     ALT5 (5) - Select instance: gpio6 signal: GPIO6_IO18
     HW_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA6_WR(
             BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA6_SION_V(DISABLED) |
-            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA6_MUX_MODE_V(ALT0));
+            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA6_MUX_MODE_V(ALT1));
     // Pad Control Register:
     // IOMUXC_SW_PAD_CTL_PAD_SD3_DATA6(0x020E0714)
     //   HYS [16] - Hysteresis Enable Field Reset: ENABLED
@@ -263,7 +264,7 @@ void uart1_iomux_config()
     //     ALT5 (5) - Select instance: gpio6 signal: GPIO6_IO17
     HW_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA7_WR(
             BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA7_SION_V(DISABLED) |
-            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA7_MUX_MODE_V(ALT0));
+            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA7_MUX_MODE_V(ALT1));
     // Pad Control Register:
     // IOMUXC_SW_PAD_CTL_PAD_SD3_DATA7(0x020E0718)
     //   HYS [16] - Hysteresis Enable Field Reset: ENABLED
