@@ -40,6 +40,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#define MULTICORE
+
 extern int SDK_TEST(void);
 
 INT8U   DBG_SysInfo = DBG_LEVEL1;
@@ -84,6 +86,8 @@ static void SYS_Task2(void *pvParameters)
 	}
 }
 
+
+
 /*
 *============================================================================
 *   Public Function: SYS_Init
@@ -118,10 +122,49 @@ INT32S SYS_Init(void)
 	err |= xTaskCreate(SYS_Task2, "sys_task2", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
 
 	if (err == pdPASS)
+	{
+		vTaskStartScheduler();
         return SYSOK;
+	}
     else
+    {
+        printf("Create task fail\n");
         return SYSERR;
+    }
 }
+
+#ifdef MULTICORE
+
+void cpu1_entry(void * arg)
+{
+    uint32_t cpu_id = cpu_get_current();
+    int cpuCount = cpu_get_cores();
+    INT32S ret;
+
+    gpio_beep();
+
+    if (cpuCount == 1)
+    {
+        printf("This chip only has one CPU!\n");
+        return;
+    }
+
+    printf("I am CPU %d!\n", cpu_id);
+
+    if (cpu_id != 0)
+    {
+        // Enable interrupts on secondary CPUs.
+        gic_init_cpu();
+    }
+
+    /* Create system tasks */
+    ret = SYS_Init();
+
+	while(1);
+}
+
+#endif
+
 
 /*!
  * main function that decides which tests to run and prompts the user before
@@ -150,7 +193,13 @@ INT32S main(void)
     printf("==========================================\n");
     printf("System running!....\n");
 
-    gpio_beep();
+
+#ifdef MULTICORE
+    // start second cpu
+    cpu_start_secondary(1, &cpu1_entry, 0);
+
+  	while(1);
+#endif
 
     // Run the unit test function.
     //multicore_test();
@@ -159,11 +208,10 @@ INT32S main(void)
 
     /* Create system tasks */
     ret = SYS_Init();
-    SYS_ASSERT(("<1> Cannot initial system\n"),ret==SYSOK);
-
-	vTaskStartScheduler();
 
 	while(1);
 
     return 0;
 }
+
+
