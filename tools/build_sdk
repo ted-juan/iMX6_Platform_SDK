@@ -77,6 +77,7 @@ usage()
     echo "  target=mx6sdl boards:"
     echo "       evb              rev a            (labeled MX6QCPUDDR3)"
     echo "       sabre_ai         rev a, b, c"
+    echo "       weintek          rev a"
     echo "       smart_device     rev a, b, c"
     echo
     echo "  target=mx6sl boards:"
@@ -112,6 +113,7 @@ valid_builds=( "mx6dq"  "sabre_ai"     "a"
                "mx6sdl" "sabre_ai"     "a"
                "mx6sdl" "sabre_ai"     "b"
                "mx6sdl" "sabre_ai"     "c"
+               "mx6sdl" "weintek "     "a"
                "mx6sdl" "evb"          "a"
                "mx6sdl" "smart_device" "a"
                "mx6sdl" "smart_device" "b"
@@ -217,9 +219,9 @@ while [ $# -gt 0 ]; do
                             if [ "$app_name" = "$1" ]; then
                                 app_name=$2
                                 shift
-								if [ "$app_name" = "freertos" ]; then
-									test_name="epit"
-								fi
+				if [ "$app_name" = "freertos" ]; then
+					test_name=""
+				fi
                             fi
                             # Clear app name if "all" is specified since the main makefile
                             # will automatically build all apps if no target is specified.

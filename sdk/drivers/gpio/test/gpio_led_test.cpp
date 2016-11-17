@@ -48,6 +48,8 @@ extern "C" void gpio_led_test(void);
 #       define LED_PIN GPIO_MAKE_PIN(1, 2) // green is 1,2; red is 1,1
 #   elif BOARD_SABRE_AI
 #       define LED_PIN GPIO_MAKE_PIN(5, 15)
+#   elif BOARD_WEINTEK
+#       define LED_PIN GPIO_MAKE_PIN(5, 12) // buzzer
 #   endif
 #elif CHIP_MX6SL
 #   if BOARD_EVK
@@ -67,7 +69,7 @@ void gpio_led_test(void)
     while (true)
     {
         led = !led;
-        
+
         hal_delay_us(500000);
     }
 }

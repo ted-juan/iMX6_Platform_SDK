@@ -74,7 +74,7 @@ extern int cpu_wp_test(void);
 extern int sata_test(void);
 #endif
 //5555555555555555
-//#if defined(BOARD_EVB) || defined(BOARD_SMART_DEVICE) || defined(BOARD_SABRE_AI) 
+//#if defined(BOARD_EVB) || defined(BOARD_SMART_DEVICE) || defined(BOARD_SABRE_AI)
 #if defined(BOARD_EVB) || defined(BOARD_SMART_DEVICE) || defined(BOARD_SABRE_AI) || defined(BOARD_SABRE_LITE)
 extern int pcie_test(void);
 #endif
@@ -132,12 +132,12 @@ const menuitem_t k_menuItems[] = {
         DEFINE_TEST_MENU_ITEM("h",  "hdmi test",        hdmi_test),
         DEFINE_TEST_MENU_ITEM("ip", "ipu test",         ipu_test),
         DEFINE_TEST_MENU_ITEM("mc", "multicore test",   multicore_test),
-        
+
 #if defined(CHIP_MX6DQ)
         // The sata test only applies to the mx6dq.
         DEFINE_TEST_MENU_ITEM("sa", "sata test",        sata_test),
 #endif // defined(CHIP_MX6DQ)
-        
+
         // Tests that apply only to particular boards for either the mx6dq or mx6sdl.
 #if defined(BOARD_EVB)
         DEFINE_TEST_MENU_ITEM("a",  "audio test",       audio_test),
@@ -157,6 +157,8 @@ const menuitem_t k_menuItems[] = {
         DEFINE_TEST_MENU_ITEM("en", "enet test",    	enet_test),
         DEFINE_TEST_MENU_ITEM("us", "usb test",     	usb_test),
         DEFINE_TEST_MENU_ITEM("ca", "camera test",      camera_test),
+#elif defined(BOARD_WEINTEK)
+        DEFINE_TEST_MENU_ITEM("f",  "flexcan test",     flexcan_test),
 #elif defined(BOARD_SABRE_AI)
         DEFINE_TEST_MENU_ITEM("ei",  "eim test",        eim_test),
         DEFINE_TEST_MENU_ITEM("mi", "mipi test",        mipi_test),
@@ -188,10 +190,10 @@ const menuitem_t k_menuItems[] = {
         DEFINE_TEST_MENU_ITEM("a",  "audio test",       audio_test),
         DEFINE_TEST_MENU_ITEM("f",	"fec test",			fec_test),
 #endif // defined(CHIP_MX6SL)
-        
+
         // Quit menu item
         MENU_MAKE_MENUITEM_EXIT(),
-        
+
         // Menu terminator
         MENU_MAKE_MENUITEM_END()
     };
@@ -209,7 +211,7 @@ menu_action_t run_test(void* param)
 {
     test_function_t testFunction = (test_function_t)param;
     testFunction();
-    
+
     return MenuAction_Show;
 }
 

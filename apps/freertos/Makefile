@@ -55,7 +55,12 @@ DEFINES +=-DSTANDALONE -DSDK_TEST=$(TEST)_test
 export APP_NAME = freertos
 LINK_APP = 1
 
+
+ifeq "$(BOARD)" "weintek"
+APP_ELF = $(APP_OUTPUT_ROOT)/$(APP_NAME).elf
+else
 APP_ELF = $(APP_OUTPUT_ROOT)/$(APP_NAME)_$(TEST).elf
+endif
 
 # Tests included in the build for all targets and boards.
 define SUBDIRS
@@ -116,6 +121,12 @@ ifneq "$(filter evb sabre_ai sabre_lite, $(BOARD))" ""
     SUBDIRS += \
         $(SDK_LIB_ROOT)/drivers/mipi/test \
         $(SDK_LIB_ROOT)/drivers/usb/test
+endif
+
+# Tests that are only available on the sabre_ai board.
+ifeq "$(BOARD)" "weintek"
+    SUBDIRS += \
+        $(SDK_LIB_ROOT)/drivers/flexcan/test
 endif
 
 # Tests that are only available on the sabre_ai board.

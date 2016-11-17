@@ -6,9 +6,9 @@
 
 /*
  * Copyright (c) 2001-2004 Swedish Institute of Computer Science.
- * All rights reserved. 
- * 
- * Redistribution and use in source and binary forms, with or without modification, 
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice,
@@ -17,21 +17,21 @@
  *      this list of conditions and the following disclaimer in the documentation
  *      and/or other materials provided with the distribution.
  * 3. The name of the author may not be used to endorse or promote products
- *      derived from this software without specific prior written permission. 
+ *      derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED 
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT 
- * SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+ * SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  *
  * This file is part of the lwIP TCP/IP stack.
- * 
+ *
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
@@ -64,9 +64,11 @@
 
 //55555555555555555555555555
 //#if defined(BOARD_SMART_DEVICE) || defined(BOARD_SABRE_AI)
-#if defined(BOARD_SMART_DEVICE) || defined(BOARD_SABRE_AI) 
+#if defined(BOARD_SMART_DEVICE) || defined(BOARD_SABRE_AI)
 #define ENET_PHY_ADDR 1
 #elif defined(BOARD_EVB) || defined(BOARD_SABRE_LITE)
+#define ENET_PHY_ADDR 0
+#elif defined(BOARD_WEINTEK)
 #define ENET_PHY_ADDR 0
 #else
 #error Unknown ENET_PHY_ADDR
@@ -132,7 +134,7 @@ void init_enet(void)
     // init enet0
     imx_enet_init(g_en0, ENET_BASE_ADDR, ENET_PHY_ADDR);
     imx_enet_mii_type(g_en0, RGMII);
-    
+
     // init phy0.
     imx_enet_phy_init(g_en0);
 
@@ -151,19 +153,19 @@ int imx_fec_setup(void)
 {
 	/* config iomux */
 	fec_iomux_config();
-	
+
 	/* gpio4_21 controls the power of FEC PHY */
 	gpio_set_direction(4, 21, 1);
 	gpio_set_level(4, 21, 1);
 	hal_delay_us(100000);
-	
+
 	/* get enet tx reference clk from internal clock from anatop
 	 * GPR1[14] = 0, GPR1[18:17] = 00
 	 */
 	HW_IOMUXC_GPR1_CLR(
 	        BM_IOMUXC_GPR1_ENET_CLK_SEL_FROM_ANALOG_LOOPBACK |
 	        BM_IOMUXC_GPR1_ENET_CLK_SEL);
-	
+
 	/* Enable ENET PLLs */
 	/* already done in ccm_init() */
 
@@ -178,7 +180,7 @@ void init_fec(void)
     // init fec0
     imx_fec_init(g_en0, REGS_FEC_BASE, 0);
     imx_fec_mii_type(g_en0, RMII);
-    
+
     // init phy0.
     imx_fec_phy_init(g_en0);
 
@@ -204,7 +206,7 @@ static void
 low_level_init(struct netif *netif)
 {
 //     struct enet *enet = netif->state;
-    
+
     /* set MAC hardware address length */
     netif->hwaddr_len = ETHARP_HWADDR_LEN;
 
@@ -214,12 +216,12 @@ low_level_init(struct netif *netif)
 
     /* maximum transfer unit */
     netif->mtu = 1500;
-    
+
     /* device capabilities */
     /* don't set NETIF_FLAG_ETHARP if this device is not an ethernet one */
     netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_LINK_UP;
- 
-    /* Do whatever else is needed to initialize interface. */    
+
+    /* Do whatever else is needed to initialize interface. */
 #if CHIP_MX6DQ || CHIP_MX6SDL
     init_enet();
 #elif CHIP_MX6SL
@@ -251,7 +253,7 @@ low_level_output(struct netif *netif, struct pbuf *p)
     u32_t l = 0;
 
 //   initiate transfer();
-    
+
 #if ETH_PAD_SIZE
     pbuf_header(p, -ETH_PAD_SIZE); /* drop the padding word */
 #endif
@@ -274,7 +276,7 @@ low_level_output(struct netif *netif, struct pbuf *p)
 #if ETH_PAD_SIZE
     pbuf_header(p, ETH_PAD_SIZE); /* reclaim the padding word */
 #endif
-    
+
     LINK_STATS_INC(link.xmit);
 
     return ERR_OK;
@@ -311,7 +313,7 @@ low_level_input(struct netif *netif)
 
     /* We allocate a pbuf chain of pbufs from the pool. */
     p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
-    
+
     if (p != NULL) {
 
 #if ETH_PAD_SIZE
@@ -344,7 +346,7 @@ low_level_input(struct netif *netif)
         LINK_STATS_INC(link.drop);
     }
 
-    return p;    
+    return p;
 }
 
 /**
@@ -400,7 +402,7 @@ enet_input(struct netif *netif)
 void enet_poll_for_packet(struct netif * netif)
 {
     unsigned long enet_events;
-    
+
 #if CHIP_MX6DQ || CHIP_MX6SDL
     enet_events = imx_enet_poll(g_en0);
 //     if (enet_events)
@@ -413,7 +415,7 @@ void enet_poll_for_packet(struct netif * netif)
     }
 #elif CHIP_MX6SL
     enet_events = imx_fec_poll(g_en0);
-    
+
     if (enet_events & FEC_EVENT_RX)
     {
         enet_input(netif);
@@ -439,7 +441,7 @@ enet_init(struct netif *netif)
 //     struct enet *enet;
 
     LWIP_ASSERT("netif != NULL", (netif != NULL));
-        
+
 //     enet = mem_malloc(sizeof(struct enet));
 //     if (enet == NULL) {
 //         LWIP_DEBUGF(NETIF_DEBUG, ("enet_init: out of memory\n"));
@@ -471,9 +473,9 @@ enet_init(struct netif *netif)
     netif->output_ip6 = ethip6_output;
 #endif /* LWIP_IPV6 */
     netif->linkoutput = low_level_output;
-    
+
 //     enet->ethaddr = (struct eth_addr *)&(netif->hwaddr[0]);
-    
+
     /* initialize the hardware */
     low_level_init(netif);
 

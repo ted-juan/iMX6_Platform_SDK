@@ -40,7 +40,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define MULTICORE
+//#define MULTICORE
 
 extern int SDK_TEST(void);
 
@@ -49,6 +49,7 @@ struct SYS_IO_BUF	SYS_OutBuf;
 extern void gpio_buzzer(int);
 extern void gpio_beep(void);
 extern void multicore_test(void);
+extern void flexcan_test(void);
 
 static void SYS_Task1(void *pvParameters)
 {
@@ -204,6 +205,7 @@ INT32S main(void)
     // Run the unit test function.
     //multicore_test();
     //epit_test();
+    //flexcan_test();
     //SDK_TEST();
 
     /* Create system tasks */
