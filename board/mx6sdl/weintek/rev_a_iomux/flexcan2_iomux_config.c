@@ -33,106 +33,26 @@
 // Function to configure IOMUXC for flexcan2 module.
 void flexcan2_iomux_config(void)
 {
-    // Config flexcan2.FLEXCAN2_RX to pad KEY_ROW4(V5)
-    // HW_IOMUXC_SW_MUX_CTL_PAD_KEY_ROW4_WR(0x00000000);
-    // HW_IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4_WR(0x0001B0B0);
-    // HW_IOMUXC_FLEXCAN2_RX_SELECT_INPUT_WR(0x00000000);
+    // Config flexcan2.FLEXCAN2_TX to SD3_DATA0
+    // HW_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA0_WR(0x00000002);
+    // HW_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0_WR(0x0001B0B0);
     // Mux Register:
-    // IOMUXC_SW_MUX_CTL_PAD_KEY_ROW4(0x020E0268)
+    // IOMUXC_SW_MUX_CTL_PAD_SD3_DATA0(0x020E0314)
     //   SION [4] - Software Input On Field Reset: DISABLED
     //              Force the selected mux mode Input path no matter of MUX_MODE functionality.
     //     DISABLED (0) - Input Path is determined by functionality of the selected mux mode (regular).
     //     ENABLED (1) - Force input path of pad.
     //   MUX_MODE [2:0] - MUX Mode Select Field Reset: ALT5
     //                    Select iomux modes to be used for pad.
-    //     ALT0 (0) - Select instance: flexcan2 signal: FLEXCAN2_RX
-    //     ALT1 (1) - Select instance: ipu1 signal: IPU1_SISG5
-    //     ALT2 (2) - Select instance: usb signal: USB_OTG_PWR
-    //     ALT3 (3) - Select instance: kpp signal: KEY_ROW4
-    //     ALT4 (4) - Select instance: uart5 signal: UART5_CTS_B
-    //     ALT5 (5) - Select instance: gpio4 signal: GPIO4_IO15
-    HW_IOMUXC_SW_MUX_CTL_PAD_KEY_ROW4_WR(
-            BF_IOMUXC_SW_MUX_CTL_PAD_KEY_ROW4_SION_V(DISABLED) | 
-            BF_IOMUXC_SW_MUX_CTL_PAD_KEY_ROW4_MUX_MODE_V(ALT0));
+    //     ALT0 (0) - Select instance: usdhc3 signal: SD3_DATA0
+    //     ALT1 (1) - Select instance: uart1 signal: UART1_CTS_B
+    //     ALT2 (2) - Select instance: flexcan2 signal: FLEXCAN2_TX
+    //     ALT5 (5) - Select instance: gpio7 signal: GPIO7_IO04
+    HW_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA0_WR(
+            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA0_SION_V(DISABLED) |
+            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA0_MUX_MODE_V(ALT2));
     // Pad Control Register:
-    // IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4(0x020E0650)
-    //   HYS [16] - Hysteresis Enable Field Reset: ENABLED
-    //     DISABLED (0) - CMOS input
-    //     ENABLED (1) - Schmitt trigger input
-    //   PUS [15:14] - Pull Up / Down Config. Field Reset: 100K_OHM_PD
-    //     100K_OHM_PD (0) - 100K Ohm Pull Down
-    //     47K_OHM_PU (1) - 47K Ohm Pull Up
-    //     100K_OHM_PU (2) - 100K Ohm Pull Up
-    //     22K_OHM_PU (3) - 22K Ohm Pull Up
-    //   PUE [13] - Pull / Keep Select Field Reset: PULL
-    //     KEEP (0) - Keeper Enabled
-    //     PULL (1) - Pull Enabled
-    //   PKE [12] - Pull / Keep Enable Field Reset: ENABLED
-    //     DISABLED (0) - Pull/Keeper Disabled
-    //     ENABLED (1) - Pull/Keeper Enabled
-    //   ODE [11] - Open Drain Enable Field Reset: DISABLED
-    //              Enables open drain of the pin.
-    //     DISABLED (0) - Output is CMOS.
-    //     ENABLED (1) - Output is Open Drain.
-    //   SPEED [7:6] - Speed Field Reset: 100MHZ
-    //     RESERVED0 (0) - Reserved
-    //     50MHZ (1) - Low (50 MHz)
-    //     100MHZ (2) - Medium (100 MHz)
-    //     200MHZ (3) - Maximum (200 MHz)
-    //   DSE [5:3] - Drive Strength Field Reset: 40_OHM
-    //     HIZ (0) - HI-Z
-    //     240_OHM (1) - 240 Ohm
-    //     120_OHM (2) - 120 Ohm
-    //     80_OHM (3) - 80 Ohm
-    //     60_OHM (4) - 60 Ohm
-    //     48_OHM (5) - 48 Ohm
-    //     40_OHM (6) - 40 Ohm
-    //     34_OHM (7) - 34 Ohm
-    //   SRE [0] - Slew Rate Field Reset: SLOW
-    //             Slew rate control.
-    //     SLOW (0) - Slow Slew Rate
-    //     FAST (1) - Fast Slew Rate
-    HW_IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4_WR(
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4_HYS_V(ENABLED) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4_PUS_V(100K_OHM_PU) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4_PUE_V(PULL) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4_PKE_V(ENABLED) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4_ODE_V(DISABLED) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4_SPEED_V(100MHZ) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4_DSE_V(40_OHM) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_ROW4_SRE_V(SLOW));
-    // Pad KEY_ROW4 is involved in Daisy Chain.
-    // Input Select Register:
-    // IOMUXC_FLEXCAN2_RX_SELECT_INPUT(0x020E07CC)
-    //   DAISY [0] - MUX Mode Select Field Reset: KEY_ROW4_ALT0
-    //               Selecting Pads Involved in Daisy Chain.
-    //     KEY_ROW4_ALT0 (0) - Select signal flexcan2 FLEXCAN2_RX as input from pad KEY_ROW4(ALT0).
-    //     SD3_DATA1_ALT2 (1) - Select signal flexcan2 FLEXCAN2_RX as input from pad SD3_DATA1(ALT2).
-    HW_IOMUXC_FLEXCAN2_RX_SELECT_INPUT_WR(
-            BF_IOMUXC_FLEXCAN2_RX_SELECT_INPUT_DAISY_V(KEY_ROW4_ALT0));
-
-    // Config flexcan2.FLEXCAN2_TX to pad KEY_COL4(T6)
-    // HW_IOMUXC_SW_MUX_CTL_PAD_KEY_COL4_WR(0x00000000);
-    // HW_IOMUXC_SW_PAD_CTL_PAD_KEY_COL4_WR(0x0001B0B0);
-    // Mux Register:
-    // IOMUXC_SW_MUX_CTL_PAD_KEY_COL4(0x020E0254)
-    //   SION [4] - Software Input On Field Reset: DISABLED
-    //              Force the selected mux mode Input path no matter of MUX_MODE functionality.
-    //     DISABLED (0) - Input Path is determined by functionality of the selected mux mode (regular).
-    //     ENABLED (1) - Force input path of pad.
-    //   MUX_MODE [2:0] - MUX Mode Select Field Reset: ALT5
-    //                    Select iomux modes to be used for pad.
-    //     ALT0 (0) - Select instance: flexcan2 signal: FLEXCAN2_TX
-    //     ALT1 (1) - Select instance: ipu1 signal: IPU1_SISG4
-    //     ALT2 (2) - Select instance: usb signal: USB_OTG_OC
-    //     ALT3 (3) - Select instance: kpp signal: KEY_COL4
-    //     ALT4 (4) - Select instance: uart5 signal: UART5_RTS_B
-    //     ALT5 (5) - Select instance: gpio4 signal: GPIO4_IO14
-    HW_IOMUXC_SW_MUX_CTL_PAD_KEY_COL4_WR(
-            BF_IOMUXC_SW_MUX_CTL_PAD_KEY_COL4_SION_V(DISABLED) | 
-            BF_IOMUXC_SW_MUX_CTL_PAD_KEY_COL4_MUX_MODE_V(ALT0));
-    // Pad Control Register:
-    // IOMUXC_SW_PAD_CTL_PAD_KEY_COL4(0x020E063C)
+    // IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0(0x020E06FC)
     //   HYS [16] - Hysteresis Enable Field Reset: ENABLED
     //     DISABLED (0) - CMOS input
     //     ENABLED (1) - Schmitt trigger input
@@ -169,13 +89,90 @@ void flexcan2_iomux_config(void)
     //             Slew rate control.
     //     SLOW (0) - Slow Slew Rate
     //     FAST (1) - Fast Slew Rate
-    HW_IOMUXC_SW_PAD_CTL_PAD_KEY_COL4_WR(
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_COL4_HYS_V(ENABLED) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_COL4_PUS_V(100K_OHM_PU) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_COL4_PUE_V(PULL) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_COL4_PKE_V(ENABLED) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_COL4_ODE_V(DISABLED) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_COL4_SPEED_V(100MHZ) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_COL4_DSE_V(40_OHM) | 
-            BF_IOMUXC_SW_PAD_CTL_PAD_KEY_COL4_SRE_V(SLOW));
+    HW_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0_WR(
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0_HYS_V(ENABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0_PUS_V(100K_OHM_PU) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0_PUE_V(PULL) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0_PKE_V(ENABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0_ODE_V(DISABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0_SPEED_V(100MHZ) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0_DSE_V(40_OHM) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA0_SRE_V(SLOW));
+
+    // Pad SD3_DATA1 is involved in Daisy Chain.
+    // Input Select Register:
+    // IOMUXC_FLEXCAN2_RX_SELECT_INPUT(0x020E07CC)
+    //   DAISY [0] - MUX Mode Select Field Reset: KEY_ROW4_ALT0
+    //               Selecting Pads Involved in Daisy Chain.
+    //     KEY_ROW4_ALT0 (0) - Select signal flexcan2 FLEXCAN2_RX as input from pad KEY_ROW4(ALT0).
+    //     SD3_DATA1_ALT2 (1) - Select signal flexcan2 FLEXCAN2_RX as input from pad SD3_DATA1(ALT2).
+    HW_IOMUXC_FLEXCAN2_RX_SELECT_INPUT_WR(
+            BF_IOMUXC_FLEXCAN2_RX_SELECT_INPUT_DAISY_V(SD3_DATA1_ALT2));
+
+    // Config flexcan2.FLEXCAN2_RX to pad SD3_DATA1
+    // HW_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA1_WR(0x00000000);
+    // HW_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1_WR(0x0001B0B0);
+    // Mux Register:
+    // IOMUXC_SW_MUX_CTL_PAD_SD3_DATA1(0x020E0318)
+    //   SION [4] - Software Input On Field Reset: DISABLED
+    //              Force the selected mux mode Input path no matter of MUX_MODE functionality.
+    //     DISABLED (0) - Input Path is determined by functionality of the selected mux mode (regular).
+    //     ENABLED (1) - Force input path of pad.
+    //   MUX_MODE [2:0] - MUX Mode Select Field Reset: ALT5
+    //                    Select iomux modes to be used for pad.
+    //     ALT0 (0) - Select instance: usdhc3 signal: SD3_DATA1
+    //     ALT1 (1) - Select instance: uart1 signal: UART1_RTS_B
+    //     ALT2 (2) - Select instance: flexcan2 signal: FLEXCAN2_RX
+    //     ALT5 (5) - Select instance: gpio7 signal: GPIO7_IO05
+    HW_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA1_WR(
+            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA1_SION_V(DISABLED) |
+            BF_IOMUXC_SW_MUX_CTL_PAD_SD3_DATA1_MUX_MODE_V(ALT2));
+    // Pad Control Register:
+    // IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1(0x020E0700)
+    //   HYS [16] - Hysteresis Enable Field Reset: ENABLED
+    //     DISABLED (0) - CMOS input
+    //     ENABLED (1) - Schmitt trigger input
+    //   PUS [15:14] - Pull Up / Down Config. Field Reset: 100K_OHM_PU
+    //     100K_OHM_PD (0) - 100K Ohm Pull Down
+    //     47K_OHM_PU (1) - 47K Ohm Pull Up
+    //     100K_OHM_PU (2) - 100K Ohm Pull Up
+    //     22K_OHM_PU (3) - 22K Ohm Pull Up
+    //   PUE [13] - Pull / Keep Select Field Reset: PULL
+    //     KEEP (0) - Keeper Enabled
+    //     PULL (1) - Pull Enabled
+    //   PKE [12] - Pull / Keep Enable Field Reset: ENABLED
+    //     DISABLED (0) - Pull/Keeper Disabled
+    //     ENABLED (1) - Pull/Keeper Enabled
+    //   ODE [11] - Open Drain Enable Field Reset: DISABLED
+    //              Enables open drain of the pin.
+    //     DISABLED (0) - Output is CMOS.
+    //     ENABLED (1) - Output is Open Drain.
+    //   SPEED [7:6] - Speed Field Reset: 100MHZ
+    //     RESERVED0 (0) - Reserved
+    //     50MHZ (1) - Low (50 MHz)
+    //     100MHZ (2) - Medium (100 MHz)
+    //     200MHZ (3) - Maximum (200 MHz)
+    //   DSE [5:3] - Drive Strength Field Reset: 40_OHM
+    //     HIZ (0) - HI-Z
+    //     240_OHM (1) - 240 Ohm
+    //     120_OHM (2) - 120 Ohm
+    //     80_OHM (3) - 80 Ohm
+    //     60_OHM (4) - 60 Ohm
+    //     48_OHM (5) - 48 Ohm
+    //     40_OHM (6) - 40 Ohm
+    //     34_OHM (7) - 34 Ohm
+    //   SRE [0] - Slew Rate Field Reset: SLOW
+    //             Slew rate control.
+    //     SLOW (0) - Slow Slew Rate
+    //     FAST (1) - Fast Slew Rate
+    HW_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1_WR(
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1_HYS_V(ENABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1_PUS_V(100K_OHM_PU) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1_PUE_V(PULL) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1_PKE_V(ENABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1_ODE_V(DISABLED) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1_SPEED_V(100MHZ) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1_DSE_V(40_OHM) |
+            BF_IOMUXC_SW_PAD_CTL_PAD_SD3_DATA1_SRE_V(SLOW));
+
 }
