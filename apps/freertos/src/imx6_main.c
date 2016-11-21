@@ -39,55 +39,90 @@
 #include "cpu_utility/cpu_utility.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
+#include "semphr.h"
 
 //#define MULTICORE
+#define MAX_MSG_QUEUE_DEPTH 20
 
-extern int SDK_TEST(void);
-
-INT8U   DBG_SysInfo = DBG_LEVEL1;
+INT8U DBG_SysInfo = DBG_LEVEL1;
 struct SYS_IO_BUF	SYS_OutBuf;
+
+/* external function */
 extern void gpio_buzzer(int);
 extern void gpio_beep(void);
 extern void multicore_test(void);
 extern void flexcan_test(void);
 
+
+xQueueHandle xMsgQueue;
+SemaphoreHandle_t xSemaphore = NULL;
+SemaphoreHandle_t xSemaphoreTx = NULL;
+SemaphoreHandle_t xSemaphoreRx = NULL;
+
+struct SYS_Message
+{
+    INT32U ucMessageID;
+    portCHAR ucData[ 20 ];
+};
+
+
 static void SYS_Task1(void *pvParameters)
 {
-	const uint32_t xFrequency = 100;
+	INT32U count = 0;
 	TickType_t xLastWakeTime = xTaskGetTickCount();
+	struct SYS_Message *pTxMessage;
 
 	pvParameters= pvParameters; /* avoid compile warning */
 
 	while(1)
 	{
-		printf("TASK1\n");
-		vTaskDelayUntil(&xLastWakeTime, xFrequency);
-
-		//vTaskDelay(1);
+		if( xSemaphoreTake(xSemaphoreTx, portMAX_DELAY) == pdTRUE )
+		{
+			/* use mutex to protect data */
+			if( xSemaphoreTake(xSemaphore, portMAX_DELAY) == pdTRUE )
+			{
+				pTxMessage = malloc(sizeof(struct SYS_Message));
+				if (pTxMessage != NULL)
+				{
+					pTxMessage->ucMessageID = count++;
+					xQueueSend( xMsgQueue, (void *)&pTxMessage, 0 );
+					printf("TASK1 tx id=%d\n", count);
+				}
+				xSemaphoreGive( xSemaphore );
+			}
+			xSemaphoreGive( xSemaphoreRx );
+		}
+		vTaskDelay(100/portTICK_RATE_MS);
 	}
 }
 
 static void SYS_Task2(void *pvParameters)
 {
-	const uint32_t xFrequency = 100;
-	TickType_t xLastWakeTime = xTaskGetTickCount();
-    int *gpio_addr = (int *)0x020ac000;
-    int data=0;
+	const INT32U xFrequency = 100;
+	struct SYS_Message *pRxMessage;
 
 	pvParameters= pvParameters; /* avoid compile warning */
 
-
 	while(1)
 	{
-		printf("TASK2\n");
-		vTaskDelayUntil(&xLastWakeTime, xFrequency);
-        //gpio_beep();
-
-		//vTaskDelay(1);
+		if( xSemaphoreTake(xSemaphoreRx, portMAX_DELAY) == pdTRUE )
+		{
+			/* use mutex to protect data */
+			if( xSemaphoreTake(xSemaphore, portMAX_DELAY) == pdTRUE )
+			{
+				if(xQueueReceive(xMsgQueue, &pRxMessage, 10/portTICK_RATE_MS) == pdPASS)
+				{
+						printf("TASK2 rx id=%d\n", pRxMessage->ucMessageID);
+						free(pRxMessage);
+				}
+				xSemaphoreGive( xSemaphore );
+			}
+			xSemaphoreGive( xSemaphoreTx );
+		}
+		vTaskDelay(300/portTICK_RATE_MS);
 	}
 }
-
-
 
 /*
 *============================================================================
@@ -107,7 +142,7 @@ INT32S SYS_Init(void)
 {
     INT8U err;
 	INT32S ret;
-	uint32_t xLastWakeTime;
+	INT32U xLastWakeTime;
 
     /*this function should be done before driver using the none cache region*/
 //    SYS_NoneCacheRegionInit();
@@ -118,7 +153,25 @@ INT32S SYS_Init(void)
 
 	printf("start timer= %d\n", xLastWakeTime);
 
+	/* Create message queue */
+	xMsgQueue = xQueueCreate(MAX_MSG_QUEUE_DEPTH , sizeof(struct SYS_Message *));
+    if (xMsgQueue == NULL)
+	    printf("Create queue fail\n");
+
+	/* Create mutex */
+    xSemaphore = xSemaphoreCreateMutex();
+    if (xSemaphore == NULL)
+	    printf("Create mutex fail\n");
+
+    xSemaphoreTx = xSemaphoreCreateCounting( 10, 10 );
+    if (xSemaphore == NULL)
+	    printf("Create sem Tx fail\n");
+
+    xSemaphoreRx = xSemaphoreCreateCounting( 10, 0 );
+    if (xSemaphoreRx == NULL)
+	    printf("Create sem Rx fail\n");
     /*Create the system task*/
+    /* message queue test */
 	err = xTaskCreate(SYS_Task1, "sys_task1", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
 	err |= xTaskCreate(SYS_Task2, "sys_task2", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
 
@@ -138,8 +191,8 @@ INT32S SYS_Init(void)
 
 void cpu1_entry(void * arg)
 {
-    uint32_t cpu_id = cpu_get_current();
-    int cpuCount = cpu_get_cores();
+    INT32U cpu_id = cpu_get_current();
+    INT32S cpuCount = cpu_get_cores();
     INT32S ret;
 
     gpio_beep();
@@ -175,7 +228,7 @@ void cpu1_entry(void * arg)
 INT32S main(void)
 {
 	INT32S ret;
-    uint32_t cpu_id = cpu_get_current();
+    INT32U cpu_id = cpu_get_current();
 
     /* hardware initialize */
     platform_init();
@@ -206,7 +259,6 @@ INT32S main(void)
     //multicore_test();
     //epit_test();
     //flexcan_test();
-    //SDK_TEST();
 
     /* Create system tasks */
     ret = SYS_Init();
