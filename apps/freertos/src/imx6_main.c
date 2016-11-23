@@ -163,10 +163,12 @@ INT32S SYS_Init(void)
     if (xSemaphore == NULL)
 	    printf("Create mutex fail\n");
 
+    /* Create Semaphore , max 10,  init 10*/
     xSemaphoreTx = xSemaphoreCreateCounting( 10, 10 );
     if (xSemaphore == NULL)
 	    printf("Create sem Tx fail\n");
 
+    /* Create Semaphore , max 10,  init 0*/
     xSemaphoreRx = xSemaphoreCreateCounting( 10, 0 );
     if (xSemaphoreRx == NULL)
 	    printf("Create sem Rx fail\n");
