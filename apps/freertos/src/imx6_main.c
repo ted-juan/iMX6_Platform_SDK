@@ -257,10 +257,11 @@ INT32S main(void)
   	while(1);
 #endif
 
-    // Run the unit test function.
+    //Run the unit test function.
     //multicore_test();
     //epit_test();
     //flexcan_test();
+    imx6_can_test();
 
     /* Create system tasks */
     ret = SYS_Init();

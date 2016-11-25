@@ -187,6 +187,7 @@ define SOURCES
     src/imx6_hook.c
     src/imx6_vectors.c
     src/imx6_gpio.c
+    src/imx6_can.c
 	$(RTOS_PATH)/tasks.c
 	$(RTOS_PATH)/queue.c
 	$(RTOS_PATH)/list.c

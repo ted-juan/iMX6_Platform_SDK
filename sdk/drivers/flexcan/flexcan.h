@@ -40,6 +40,15 @@
 #define CAN_MB_OFFSET 0x80
 #define CAN_IRQS(x) ( (x) == HW_FLEXCAN1 ? IMX_INT_FLEXCAN1 : (x) == HW_FLEXCAN2 ? IMX_INT_FLEXCAN2 : 0xFFFFFFFF)
 
+#define FLEXCAN_MB_CNT_CODE(x)          (((x) & 0xf) << 24)
+#define FLEXCAN_MB_CNT_SRR              (1<<22)
+#define FLEXCAN_MB_CNT_IDE              (1<<21)
+#define FLEXCAN_MB_CNT_RTR              (1<<20)
+#define FLEXCAN_MB_CNT_LENGTH(x)        (((x) & 0xf) << 16)
+#define FLEXCAN_MB_CNT_TIMESTAMP(x)     ((x) & 0xffff)
+
+#define FLEXCAN_MB_CODE_MASK            (0xf0ffffff)
+
 //! @brief  CAN message buffer structure
 struct can_mb {
     volatile uint32_t cs;       //! Code and Status
