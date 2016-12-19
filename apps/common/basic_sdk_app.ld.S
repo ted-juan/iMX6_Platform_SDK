@@ -53,7 +53,7 @@ ENTRY(_start)
     #define DDR_ORG 0x80000000
 #elif defined(CHIP_MX6SDL) || defined(CHIP_MX6DQ)
     // mx6dq and mx6sdl DDR memory starts at this address
-    #define DDR_ORG 0x10000000
+    #define DDR_ORG 0x3C000000
 #else
     #error Unknown chip!
 #endif
@@ -63,7 +63,7 @@ ENTRY(_start)
     #define DDR_LEN 2048M
 #else
     // all other boards have 1GB of DDR3
-    #define DDR_LEN 1024M
+    #define DDR_LEN 128M
 #endif
 
 // Maximum size of the signed image
