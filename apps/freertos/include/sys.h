@@ -280,18 +280,20 @@ extern int test_printf(void);
 
 #define SYS_ISR_STK_SIZE 	    512
 
-/*System timer task */
-#define TIMER_TASK_PRIO     	4
-#define TIMER_TASK_STK_SIZE 	4096
-
 /*System Event task, handle device's event from ISR */
 #define EVENT_TASK_PRIO      	6
 #define EVENT_TASK_STK_SIZE  	512
 #define EVENT_Q_MSG          	5
 
 /*System task */
-#define SYS_TASK_PRIO      	    7
+#define SYS_TASK_PRIO      	    1
 #define SYS_TASK_STK_SIZE  	    2048
+
+/*CAN bus task */
+#define CAN_TASK_PRIO      	    2
+#define CAN_IRQ_PRIO            6
+#define CAN_TASK_STK_SIZE  	    2048
+
 
 #define ___swab16(x) \
                     ((unsigned int)( \

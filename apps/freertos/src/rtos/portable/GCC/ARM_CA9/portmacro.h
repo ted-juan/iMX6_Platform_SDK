@@ -92,6 +92,7 @@
 #define portSHORT		short
 #define portSTACK_TYPE	uint32_t
 #define portBASE_TYPE	long
+#define portTICK_TYPE	uint32_t
 
 typedef portSTACK_TYPE StackType_t;
 typedef long BaseType_t;
@@ -159,7 +160,7 @@ macros is used. */
 
 /* Prototype of the FreeRTOS tick handler.  This must be installed as the
 handler for whichever peripheral is used to generate the RTOS tick. */
-void FreeRTOS_Tick_Handler( void );
+void FreeRTOS_Tick_Handler(void);
 
 /* If configUSE_TASK_FPU_SUPPORT is set to 1 (or left undefined) then tasks are
 created without an FPU context and must call vPortTaskUsesFPU() to give

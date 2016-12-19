@@ -199,8 +199,15 @@ command interpreter running. */
 
 /* Normal assert() semantics without relying on the provision of an assert.h
 header file. */
+
+/* TedJ, I would like to use xQueueSendFromISR() in ISR, but
+  the portICCRPR_RUNNING_PRIORITY_REGISTER cannot work,
+  I don't know why the CPU register cannot response the correct value,
+  so mark the below define temporary */
+/*
 void vAssertCalled( const char * pcFile, unsigned long ulLine );
 #define configASSERT( x ) if( ( x ) == 0 ) vAssertCalled( __FILE__, __LINE__ );
+*/
 
 /* If configTASK_RETURN_ADDRESS is not defined then a task that attempts to
 return from its implementing function will end up in a "task exit error"

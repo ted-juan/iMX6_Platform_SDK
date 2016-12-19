@@ -491,7 +491,7 @@ void vPortExitCritical( void )
 }
 /*-----------------------------------------------------------*/
 
-void FreeRTOS_Tick_Handler( void )
+void FreeRTOS_Tick_Handler(void)
 {
 	/* Set interrupt mask before altering scheduler structures.   The tick
 	handler runs at the lowest priority, so interrupts cannot already be masked,

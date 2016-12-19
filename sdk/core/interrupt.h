@@ -55,6 +55,7 @@ typedef enum {
 
 //! @brief Interrupt service routine.
 typedef void (*irq_hdlr_t) (void);
+typedef void (*freertos_irq_hdlr_t) (void);
 
 ////////////////////////////////////////////////////////////////////////////////
 // API
@@ -85,6 +86,7 @@ void disable_interrupt(uint32_t irq_id, uint32_t cpu_id);
 //! @param irq_id The interrupt number.
 //! @param isr Function that will be called to handle the interrupt.
 void register_interrupt_routine(uint32_t irq_id, irq_hdlr_t isr);
+void freertos_register_interrupt_routine(uint32_t irq_id, freertos_irq_hdlr_t isr);
 
 //! @brief Interrupt handler that simply prints a message.
 void default_interrupt_routine(void);

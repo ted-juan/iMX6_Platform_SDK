@@ -48,7 +48,7 @@ void flexcan_test(void)
 {
     int i;
 	uint8_t ch;
-    //struct imx_flexcan can1, can2;    
+    //struct imx_flexcan can1, can2;
 
     //can_set_can_attributes(&can1, KBPS_500, &can1_port);
     //can_set_can_attributes(&can2, KBPS_500, &can2_port);
@@ -63,15 +63,15 @@ void flexcan_test(void)
 	do {
 		ch = getchar();
 	} while (ch == (uint8_t) 0xFF);
-	
+
 	if((ch != 'Y') && (ch != 'y')){
 		printf("\nTest exit.\n");
 		return ;
 	}
     can_test_count = 0;
 
-    can_init(can1_port, CAN_LAST_MB);  // max 64 MB 0-63
-    can_init(can2_port, CAN_LAST_MB);  // last mb is MB[63]
+    can_imx6_init(can1_port, CAN_LAST_MB);  // max 64 MB 0-63
+    can_imx6_init(can2_port, CAN_LAST_MB);  // last mb is MB[63]
 
     printf("CAN1-TX and CAN2-RX\n");
     // configure CAN1 MBs as Tx, and CAN2 MBs as Rx

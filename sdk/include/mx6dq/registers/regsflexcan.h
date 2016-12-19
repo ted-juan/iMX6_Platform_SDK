@@ -35,6 +35,7 @@
  * - HW_FLEXCAN_RXGMASK - Rx Global Mask
  * - HW_FLEXCAN_RX14MASK - Rx 14 Mask
  * - HW_FLEXCAN_RX15MASK - Rx 15 Mask
+ * - HW_FLEXCAN_RXFGMASK - RxFG Global Mask
  * - HW_FLEXCAN_ECR - Error Counter Register
  * - HW_FLEXCAN_ESR - Error and Status Register
  * - HW_FLEXCAN_IMASK2 - Interrupt Masks 2 Register
@@ -170,6 +171,10 @@ typedef union _hw_flexcan_mcr
 //@{
 #define BP_FLEXCAN_MCR_IDAM      (8)      //!< Bit position for FLEXCAN_MCR_IDAM.
 #define BM_FLEXCAN_MCR_IDAM      (0x00000300)  //!< Bit mask for FLEXCAN_MCR_IDAM.
+#define BM_FLEXCAN_MCR_IDAM_A              (0 << 8)
+#define BM_FLEXCAN_MCR_IDAM_B              (1 << 8)
+#define BM_FLEXCAN_MCR_IDAM_C              (2 << 8)
+#define BM_FLEXCAN_MCR_IDAM_D              (3 << 8)
 
 //! @brief Get value of FLEXCAN_MCR_IDAM from a register value.
 #define BG_FLEXCAN_MCR_IDAM(r)   ((__REG_VALUE_TYPE((r), reg32_t) & BM_FLEXCAN_MCR_IDAM) >> BP_FLEXCAN_MCR_IDAM)
@@ -2323,6 +2328,42 @@ typedef union _hw_flexcan_gfwr
 #ifndef __LANGUAGE_ASM__
 //! @brief Set the GFWR field to a new value.
 #define BW_FLEXCAN_GFWR_GFWR(x, v)   (HW_FLEXCAN_GFWR_WR(x, (HW_FLEXCAN_GFWR_RD(x) & ~BM_FLEXCAN_GFWR_GFWR) | BF_FLEXCAN_GFWR_GFWR(v)))
+#endif
+//@}
+//-------------------------------------------------------------------------------------------
+// HW_FLEXCAN_RXFGMASK - RxFG Global Mask
+//-------------------------------------------------------------------------------------------
+
+#ifndef __LANGUAGE_ASM__
+/*!
+ * @brief HW_FLEXCAN_RXFGMASK - RxF Global Mask (RW)
+ *
+ * Reset value: 0xffffffff
+ *
+ */
+typedef union _hw_flexcan_rxfgmask
+{
+    reg32_t U;
+    struct _hw_flexcan_rxfgmask_bitfields
+    {
+        unsigned MI31_MI0 : 32; //!< [31:0] For normal Rx message buffers, the mask bits affect the ID filter programmed on the message buffer.
+    } B;
+} hw_flexcan_rxfgmask_t;
+#endif
+
+/*!
+ * @name Constants and macros for entire FLEXCAN_RXGMASK register
+ */
+//@{
+#define HW_FLEXCAN_RXFGMASK_ADDR(x)      (REGS_FLEXCAN_BASE(x) + 0x48)
+
+#ifndef __LANGUAGE_ASM__
+#define HW_FLEXCAN_RXFGMASK(x)           (*(volatile hw_flexcan_rxfgmask_t *) HW_FLEXCAN_RXFGMASK_ADDR(x))
+#define HW_FLEXCAN_RXFGMASK_RD(x)        (HW_FLEXCAN_RXFGMASK(x).U)
+#define HW_FLEXCAN_RXFGMASK_WR(x, v)     (HW_FLEXCAN_RXFGMASK(x).U = (v))
+#define HW_FLEXCAN_RXFGMASK_SET(x, v)    (HW_FLEXCAN_RXFGMASK_WR(x, HW_FLEXCAN_RXFGMASK_RD(x) |  (v)))
+#define HW_FLEXCAN_RXFGMASK_CLR(x, v)    (HW_FLEXCAN_RXFGMASK_WR(x, HW_FLEXCAN_RXFGMASK_RD(x) & ~(v)))
+#define HW_FLEXCAN_RXFGMASK_TOG(x, v)    (HW_FLEXCAN_RXFGMASK_WR(x, HW_FLEXCAN_RXFGMASK_RD(x) ^  (v)))
 #endif
 //@}
 

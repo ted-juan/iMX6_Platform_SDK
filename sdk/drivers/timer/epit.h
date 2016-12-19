@@ -97,9 +97,10 @@ void epit_init(uint32_t instance, uint32_t clock_src, uint32_t prescaler,
  * @param   enableIt True to enable the interrupt, false to disable.
  */
 void epit_setup_interrupt(uint32_t instance, void (*irq_subroutine)(void), bool enableIt);
+void freertos_epit_setup_interrupt(uint32_t instance, void (*irq_subroutine)(void), bool enableIt, uint32_t priority);
 
 /*!
- * @brief Enable the EPIT module. 
+ * @brief Enable the EPIT module.
  *
  * Used typically when the epit_init is done, and other interrupt related settings are ready.
  *
@@ -123,7 +124,7 @@ void epit_counter_disable(uint32_t instance);
 
 /*!
  * @brief Get the output compare status flag and clear it if set.
- * 
+ *
  * This function can typically be used for polling method, but
  * is also used to clear the status compare flag in IRQ mode.
  *
@@ -134,7 +135,7 @@ uint32_t epit_get_compare_event(uint32_t instance);
 
 /*!
  * @brief Set the output compare register.
- * 
+ *
  *
  * @param   instance the EPIT instance number.
  * @param   Value of the compare register.
@@ -143,7 +144,7 @@ void epit_set_compare_event(uint32_t instance, uint32_t compare_val);
 
 /*!
  * @brief Get the counter value.
- * 
+ *
  *
  * @param   instance the EPIT instance number.
  * @return  Value of the counter register.

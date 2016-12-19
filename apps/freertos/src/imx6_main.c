@@ -53,6 +53,8 @@ extern void gpio_buzzer(int);
 extern void gpio_beep(void);
 extern void multicore_test(void);
 extern void flexcan_test(void);
+extern void imx6_can_test(void);
+extern int CAN_Init(void);
 
 
 xQueueHandle xMsgQueue;
@@ -93,7 +95,7 @@ static void SYS_Task1(void *pvParameters)
 			}
 			xSemaphoreGive( xSemaphoreRx );
 		}
-		vTaskDelay(100/portTICK_RATE_MS);
+		vTaskDelay(1000/portTICK_RATE_MS);
 	}
 }
 
@@ -120,9 +122,26 @@ static void SYS_Task2(void *pvParameters)
 			}
 			xSemaphoreGive( xSemaphoreTx );
 		}
-		vTaskDelay(300/portTICK_RATE_MS);
+		vTaskDelay(3000/portTICK_RATE_MS);
 	}
 }
+
+static void SYS_Task0(void *pvParameters)
+{
+	INT32U ret;
+
+	/* start system device init */
+	xTaskCreate(SYS_Task1, "sys_task1", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
+	xTaskCreate(SYS_Task2, "sys_task2", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
+	//ret = CAN_Init();
+
+
+	/* implement command in console */
+	while(1)
+		vTaskDelay(1000/portTICK_RATE_MS);
+
+}
+
 
 /*
 *============================================================================
@@ -172,21 +191,15 @@ INT32S SYS_Init(void)
     xSemaphoreRx = xSemaphoreCreateCounting( 10, 0 );
     if (xSemaphoreRx == NULL)
 	    printf("Create sem Rx fail\n");
+
     /*Create the system task*/
     /* message queue test */
-	err = xTaskCreate(SYS_Task1, "sys_task1", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
-	err |= xTaskCreate(SYS_Task2, "sys_task2", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
 
-	if (err == pdPASS)
-	{
-		vTaskStartScheduler();
-        return SYSOK;
-	}
-    else
-    {
-        printf("Create task fail\n");
-        return SYSERR;
-    }
+	xTaskCreate(SYS_Task0, "sys_task0", SYS_TASK_STK_SIZE, NULL, SYS_TASK_PRIO, ( xTaskHandle * ) NULL);
+
+	vTaskStartScheduler();
+
+    return SYSOK;
 }
 
 #ifdef MULTICORE
@@ -249,7 +262,6 @@ INT32S main(void)
     printf("==========================================\n");
     printf("System running!....\n");
 
-
 #ifdef MULTICORE
     // start second cpu
     cpu_start_secondary(1, &cpu1_entry, 0);
@@ -261,7 +273,6 @@ INT32S main(void)
     //multicore_test();
     //epit_test();
     //flexcan_test();
-    imx6_can_test();
 
     /* Create system tasks */
     ret = SYS_Init();

@@ -20,7 +20,7 @@ extern INT32S SYS_Install_Handler(SYS_DEVICE *dev, INT32U location, void (*handl
 /* epit instance for system tick */
 static uint32_t epit_instance = HW_EPIT2;
 static volatile uint8_t g_wait_for_irq;
-extern irq_hdlr_t g_interrupt_handlers[IMX_INTERRUPT_COUNT];
+extern freertos_irq_hdlr_t freertos_g_interrupt_handlers[IMX_INTERRUPT_COUNT];
 extern volatile uint32_t g_vectNum[4];
 
 /*
@@ -59,9 +59,10 @@ void vConfigureTickInterrupt( void )
     freq = get_main_clock(IPG_CLK);
     epit_init(epit_instance, CLKSRC_IPG_CLK, freq/1000000,
               SET_AND_FORGET, 10000, WAIT_MODE_EN | STOP_MODE_EN);
-    epit_setup_interrupt(epit_instance, FreeRTOS_Tick_Handler, TRUE);
+//    freertos_epit_setup_interrupt(epit_instance, FreeRTOS_Tick_Handler, TRUE, portLOWEST_USABLE_INTERRUPT_PRIORITY << portPRIORITY_SHIFT);
+    freertos_epit_setup_interrupt(epit_instance, FreeRTOS_Tick_Handler, TRUE, 7);
     epit_get_compare_event(epit_instance);
-    epit_counter_enable(epit_instance, 10000, IRQ_MODE); // 10ms
+    epit_counter_enable(epit_instance, 1000, IRQ_MODE); // 1ms
 
 #if 0
     while ((counter/100) != max_duration) {
@@ -115,7 +116,7 @@ void vApplicationFPUSafeIRQHandler( uint32_t ulICCIAR )
 
         // Call the service routine stored in the handlers array. If there isn't
         // one for this IRQ, then call the default handler.
-        irq_hdlr_t isr = g_interrupt_handlers[irq];
+        freertos_irq_hdlr_t isr = freertos_g_interrupt_handlers[irq];
         if (isr)
         {
             isr();

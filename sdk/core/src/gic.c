@@ -135,7 +135,11 @@ void gic_set_irq_priority(uint32_t ID, uint32_t priority)
     
     // Update the priority register. The priority registers are byte accessible, and the register
     // struct has the priority registers as a byte array, so we can just index directly by the
-    // interrupt ID.
+    // interrupt ID
+
+    /*A GIC might implement fewer than eight priority bits, but must implement at least bits [7:4]
+    of each field. In each field, unimplemented bits are RAZ/WI. */
+
     gicd->IPRIORITYRn[ID] = priority & 0xff;
 }
 

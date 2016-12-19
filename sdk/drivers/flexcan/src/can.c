@@ -55,7 +55,7 @@ static struct time_segment time_segments[18] = {
     {7, 7, 7} /* 17: total 25 timequanta */
 };
 
-void can_init(uint32_t instance, uint32_t max_mb)
+void can_imx6_init(uint32_t instance, uint32_t max_mb)
 {
     uint32_t ctl;
     int i;
@@ -85,6 +85,57 @@ void can_init(uint32_t instance, uint32_t max_mb)
     HW_FLEXCAN_IMASK2_WR(instance, 0);
 }
 
+/* reference to linux driver flexcan.c*/
+void can_imx6_start(uint32_t instance, uint32_t max_mb)
+{
+    uint32_t ctrl, i;
+
+    ctrl = HW_FLEXCAN_MCR_RD(instance);
+    ctrl &= ~BM_FLEXCAN_MCR_MAXMB;    	//clear MAXMB field
+
+    ctrl |= BM_FLEXCAN_MCR_FRZ | BM_FLEXCAN_MCR_FEN | BM_FLEXCAN_MCR_HALT |
+    		BM_FLEXCAN_MCR_SUPV | BM_FLEXCAN_MCR_WRN_EN |
+			BM_FLEXCAN_MCR_IDAM_C | BM_FLEXCAN_MCR_SRX_DIS |
+			BM_FLEXCAN_MCR_WAK_MSK | BM_FLEXCAN_MCR_SLF_WAK |
+			BF_FLEXCAN_MCR_MAXMB(max_mb);
+
+    HW_FLEXCAN_MCR_WR(instance, ctrl);
+
+    ctrl = HW_FLEXCAN_CTRL_RD(instance);
+    ctrl &= ~BM_FLEXCAN_CTRL_TSYN;
+    ctrl |= BM_FLEXCAN_CTRL_BOFF_REC | BM_FLEXCAN_CTRL_LBUF |
+    		BM_FLEXCAN_CTRL_ERR_MSK |
+            BM_FLEXCAN_CTRL_TWRN_MSK | BM_FLEXCAN_CTRL_RWRN_MSK |
+			BM_FLEXCAN_CTRL_BOFF_MSK;
+
+    HW_FLEXCAN_CTRL_WR(instance, ctrl);
+
+    /* clear and invalidate all mailboxes first */
+    for (i = FLEXCAN_TX_BUF_ID; i < CAN_NUMBER_OF_BUFFERS; i++) {
+        set_can_mb(instance, i, FLEXCAN_MB_CODE_RX_INACTIVE, 0, 0, 0);
+    }
+
+    /* Errata ERR005829: mark first TX mailbox as INACTIVE */
+    set_can_mb(instance, FLEXCAN_TX_BUF_RESERVED, FLEXCAN_MB_CODE_TX_INACTIVE, 0, 0, 0);
+
+    /* mark TX mailbox as INACTIVE */
+    set_can_mb(instance, FLEXCAN_TX_BUF_ID, FLEXCAN_MB_CODE_TX_INACTIVE, 0, 0, 0);
+
+    /* acceptance mask/acceptance code (accept everything) */
+    HW_FLEXCAN_RXGMASK_WR(instance, 0);
+    HW_FLEXCAN_RX14MASK_WR(instance, 0);
+    HW_FLEXCAN_RX15MASK_WR(instance, 0);
+    HW_FLEXCAN_RXFGMASK_WR(instance, 0);
+
+    /* unfreeze */
+    ctrl = HW_FLEXCAN_MCR_RD(instance);
+    ctrl &= ~BM_FLEXCAN_MCR_HALT;
+    HW_FLEXCAN_MCR_WR(instance, ctrl);
+
+    while (HW_FLEXCAN_MCR_RD(instance) & BM_FLEXCAN_MCR_FRZ_ACK) ;  // poll until complete
+
+}
+
 void can_update_bitrate(uint32_t instance, enum can_bitrate bitrate)
 {
     unsigned int can_PE_CLK = get_peri_clock(CAN_CLK);  //can protocol engine clock, input from CCM
@@ -94,7 +145,7 @@ void can_update_bitrate(uint32_t instance, enum can_bitrate bitrate)
 
     if (can_PE_CLK == 30000000){
         switch (bitrate){
-            case MBPS_1: // 
+            case MBPS_1: //
                 presdiv = 1; // sets sclk ftq to 15MHz = PEclk/2
                 ts = time_segments[7]; // 15 time quanta (15-8=7 for array ID)
                 break;
@@ -105,7 +156,7 @@ void can_update_bitrate(uint32_t instance, enum can_bitrate bitrate)
             case KBPS_500:
                 presdiv = 2; // sets sclk ftq to 10MHz = PEclk/3
                 ts = time_segments[12]; // 20 time quanta (20-8=12 for array ID)
-                break;   
+                break;
             case KBPS_250:
                 presdiv = 4; // sets sclk ftq to 6MHz = PEclk/5
                 ts = time_segments[16]; // 24 time quanta (24-8=16 for array ID)
@@ -114,7 +165,7 @@ void can_update_bitrate(uint32_t instance, enum can_bitrate bitrate)
                 presdiv = 9; // sets sclk ftq to 3MHz = PEclk/10
                 ts = time_segments[16]; // 24 time quanta (24-8=16 for array ID)
                 break;
-            case KBPS_62:  //62.5kps 
+            case KBPS_62:  //62.5kps
                 presdiv = 19; // sets sclk ftq to 1.5MHz = PEclk/20
                 ts = time_segments[16]; // 24 time quanta (24-8=16 for array ID)
                 break;
@@ -128,11 +179,11 @@ void can_update_bitrate(uint32_t instance, enum can_bitrate bitrate)
                 break;
             default:
                 printf("CAN bitrate not supported\n");
-                break;       
+                break;
         }
     }
     else { printf("CAN PE_CLK input to CAN module speed not supported\n");}
-    
+
     // Update the the bit timing segments
     temp = HW_FLEXCAN_CTRL_RD(instance) & CAN_TIMING_MASK;
     temp += (presdiv <<24) + (ts.pseg1 <<19) + (ts.pseg2 <<16) + (ts.propseg);
@@ -170,6 +221,20 @@ void print_can_mb(uint32_t instance, uint32_t mbID)
     printf("\tMB[%d].id    = 0x%x\n", mbID, can_mb->MB[mbID].id);
     printf("\tMB[%d].data0 = 0x%x\n", mbID, can_mb->MB[mbID].data0);
     printf("\tMB[%d].data1 = 0x%x\n\n", mbID, can_mb->MB[mbID].data1);
+}
+
+struct can_mb *get_can_mb(uint32_t instance, uint32_t mbID)
+{
+    uint32_t base = REGS_FLEXCAN_BASE(instance);
+    volatile struct can_message_buffers *can_mb =
+        (volatile struct can_message_buffers *)(base + CAN_MB_OFFSET);
+
+    return &can_mb->MB[mbID];
+}
+
+void can_enable_fifo_interrupt(uint32_t instance)
+{
+	HW_FLEXCAN_IMASK1_WR(instance, FLEXCAN_IFLAG_DEFAULT);
 }
 
 void can_enable_mb_interrupt(uint32_t instance, uint32_t mbID)
@@ -226,7 +291,7 @@ uint64_t can_mb_int_flag(uint32_t instance)
 
     val = (uint64_t)HW_FLEXCAN_IFLAG2_RD(instance);
     val <<= 32;
-    val |=(uint64_t)HW_FLEXCAN_IFLAG1_RD(instance);	
+    val |=(uint64_t)HW_FLEXCAN_IFLAG1_RD(instance);
 
     return val;
 }
@@ -240,10 +305,15 @@ void can_mb_int_ack(uint32_t instance, uint32_t mbID)
     	val |= (0x01 << mbID);
 	HW_FLEXCAN_IFLAG1_WR(instance, val);
     }else{
-    	val = HW_FLEXCAN_IFLAG2_RD(instance);	
+    	val = HW_FLEXCAN_IFLAG2_RD(instance);
     	val |= (0x01 << (mbID - 32));
 	HW_FLEXCAN_IFLAG2_WR(instance, val);
     }
+}
+
+void freertos_can_int_ack(uint32_t instance, uint32_t val)
+{
+	HW_FLEXCAN_IFLAG1_WR(instance, val);
 }
 
 void can_setup_interrupt(uint32_t instance, void (*irq_subroutine)(void), bool enableIt)
@@ -257,6 +327,25 @@ void can_setup_interrupt(uint32_t instance, void (*irq_subroutine)(void), bool e
 
         // enable the IRQ
         enable_interrupt(irq_id, CPU_0, 0);
+    }
+    else
+    {
+        // disable the IRQ
+        disable_interrupt(irq_id, CPU_0);
+    }
+}
+
+void freertos_can_setup_interrupt(uint32_t instance, void (*irq_subroutine)(void), bool enableIt, uint32_t priority)
+{
+    uint32_t irq_id = CAN_IRQS(instance);
+
+    if (enableIt)
+    {
+	// register the IRQ sub-routine
+        freertos_register_interrupt_routine(irq_id, irq_subroutine);
+
+        // enable the IRQ
+        enable_interrupt(irq_id, CPU_0, priority);
     }
     else
     {

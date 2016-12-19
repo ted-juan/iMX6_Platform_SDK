@@ -33,6 +33,7 @@
 
 #include "sdk.h"
 
+
 #define CAN_TIMING_MASK  0x00C0FFF8  // to zero out presdiv, pseg1, pseg2, prop_seg
 #define CAN_NUMBER_OF_BUFFERS 64    // Define the number of MB
 #define CAN_LAST_MB 63
@@ -41,20 +42,56 @@
 #define CAN_IRQS(x) ( (x) == HW_FLEXCAN1 ? IMX_INT_FLEXCAN1 : (x) == HW_FLEXCAN2 ? IMX_INT_FLEXCAN2 : 0xFFFFFFFF)
 
 #define FLEXCAN_MB_CNT_CODE(x)          (((x) & 0xf) << 24)
+#define FLEXCAN_MB_CODE_RX_INACTIVE     (0x0 << 24)
+#define FLEXCAN_MB_CODE_RX_EMPTY        (0x4 << 24)
+#define FLEXCAN_MB_CODE_RX_FULL         (0x2 << 24)
+#define FLEXCAN_MB_CODE_RX_OVERRRUN     (0x6 << 24)
+#define FLEXCAN_MB_CODE_RX_RANSWER      (0xa << 24)
+
+#define FLEXCAN_MB_CODE_TX_INACTIVE     (0x8 << 24)
+#define FLEXCAN_MB_CODE_TX_ABORT        (0x9 << 24)
+#define FLEXCAN_MB_CODE_TX_DATA         (0xc << 24)
+#define FLEXCAN_MB_CODE_TX_TANSWER      (0xe << 24)
+
 #define FLEXCAN_MB_CNT_SRR              (1<<22)
 #define FLEXCAN_MB_CNT_IDE              (1<<21)
 #define FLEXCAN_MB_CNT_RTR              (1<<20)
 #define FLEXCAN_MB_CNT_LENGTH(x)        (((x) & 0xf) << 16)
 #define FLEXCAN_MB_CNT_TIMESTAMP(x)     ((x) & 0xffff)
 
+/* FLEXCAN interrupt flag register (IFLAG) bits */
+/* Errata ERR005829 step7: Reserve first valid MB */
+#define FLEXCAN_RX_BUF_ID               0
+#define FLEXCAN_RX_MB_MASK              0xff
+#define FLEXCAN_TX_BUF_RESERVED         8
+#define FLEXCAN_TX_BUF_ID               9
+#define FLEXCAN_IFLAG_BUF(x)            (1<<x)
+#define FLEXCAN_IFLAG_RX_FIFO_OVERFLOW  (1<<7)
+#define FLEXCAN_IFLAG_RX_FIFO_WARN      (1<<6)
+#define FLEXCAN_IFLAG_RX_FIFO_AVAILABLE (1<<5)
+#define FLEXCAN_IFLAG_DEFAULT \
+        (FLEXCAN_IFLAG_RX_FIFO_OVERFLOW | FLEXCAN_IFLAG_RX_FIFO_AVAILABLE | \
+         FLEXCAN_IFLAG_BUF(FLEXCAN_TX_BUF_ID))
+
 #define FLEXCAN_MB_CODE_MASK            (0xf0ffffff)
+
+/* special address description flags for the CAN_ID */
+#define CAN_EFF_FLAG 0x80000000U /* EFF/SFF is set in the MSB */
+#define CAN_RTR_FLAG 0x40000000U /* remote transmission request */
+#define CAN_ERR_FLAG 0x20000000U /* error message frame */
+
+/* valid bits in CAN ID for frame formats */
+#define CAN_SFF_MASK 0x000007FFU /* standard frame format (SFF) */
+#define CAN_EFF_MASK 0x1FFFFFFFU /* extended frame format (EFF) */
+#define CAN_ERR_MASK 0x1FFFFFFFU /* omit EFF, RTR, ERR flags */
+
 
 //! @brief  CAN message buffer structure
 struct can_mb {
     volatile uint32_t cs;       //! Code and Status
     volatile uint32_t id;       //! ID
-    volatile uint32_t data0;    
-    volatile uint32_t data1;   
+    volatile uint32_t data0;
+    volatile uint32_t data1;
 };
 
 //! @brief  CAN Message Buffers   0x80 - 0x170
@@ -62,14 +99,14 @@ struct can_message_buffers {
     volatile struct can_mb MB[64];
 };
 
-//! @brief  CAN timing related structures 
+//! @brief  CAN timing related structures
 struct time_segment {
 	uint32_t propseg;
 	uint32_t pseg1;
 	uint32_t pseg2;
 };
 
-//! @brief    Baudrates of CAN bus(kps) 
+//! @brief    Baudrates of CAN bus(kps)
 enum can_bitrate {
       MBPS_1,
       KBPS_800,
@@ -99,17 +136,25 @@ void can_sw_reset(uint32_t instance);
  * @param   instance 	the FlexCAN instance number.
  * @param   max_mb	Max mailbox will be used
  */
-void can_init(uint32_t instance, uint32_t max_mb);
+void can_imx6_init(uint32_t instance, uint32_t max_mb);
+
+/*!
+ * @brief Initialize CAN init2
+ *
+ * @param   instance 	the FlexCAN instance number.
+ * @param   max_mb	Max mailbox will be used
+ */
+void can_imx6_start(uint32_t instance, uint32_t max_mb);
 
 /*!
  * @brief Set message box fields
  *
  * @param   instance	the FlexCAN instance number.
- * @param   mbID	Index of the message box 
+ * @param   mbID	Index of the message box
  * @param   cs		control/statuc code
  * @param   id		ID of the message to be transfer
- * @param   data0	first 4 bytes of the CAN message 
- * @param   data1	last 4 bytes of the CAN message 
+ * @param   data0	first 4 bytes of the CAN message
+ * @param   data1	last 4 bytes of the CAN message
  */
 void set_can_mb(uint32_t instance, uint32_t mbID, uint32_t cs, uint32_t id, uint32_t data0, uint32_t data1);
 
@@ -117,7 +162,7 @@ void set_can_mb(uint32_t instance, uint32_t mbID, uint32_t cs, uint32_t id, uint
  * @brief Dump the message box
  *
  * @param   instance	the FlexCAN instance number.
- * @param   mbID	Index of the message box 
+ * @param   mbID	Index of the message box
  */
 void print_can_mb(uint32_t instance, uint32_t mbID);
 
@@ -125,7 +170,7 @@ void print_can_mb(uint32_t instance, uint32_t mbID);
  * @brief Enable the interrupt of the FlexCAN module
  *
  * @param   instance	the FlexCAN instance number.
- * @param   mbID	Index of the message box 
+ * @param   mbID	Index of the message box
  */
 void can_enable_mb_interrupt(uint32_t instance, uint32_t mbID);
 
@@ -133,10 +178,16 @@ void can_enable_mb_interrupt(uint32_t instance, uint32_t mbID);
  * @brief Disable the interrupt of the FlexCAN module
  *
  * @param   instance	the FlexCAN instance number.
- * @param   mbID	Index of the message box 
+ * @param   mbID	Index of the message box
  */
 void can_disable_mb_interrupt(uint32_t instance, uint32_t mbID);
 
+/*!
+ * @brief Enable the rx fifo interrupt of the FlexCAN module
+ *
+ * @param   instance	the FlexCAN instance number.
+ */
+void can_enable_fifo_interrupt(uint32_t instance);
 
 /*!
  * @brief Setup the interrupt of the FlexCAN module
@@ -149,6 +200,7 @@ void can_disable_mb_interrupt(uint32_t instance, uint32_t mbID);
  * @param   enableIt True to enable the interrupt, false to disable.
  */
 void can_setup_interrupt(uint32_t instance, void (*irq_subroutine)(void), bool enableIt);
+void freertos_can_setup_interrupt(uint32_t instance, void (*irq_subroutine)(void), bool enableIt, uint32_t priority);
 
 /*!
  * @brief Un-freeze the FlexCAN module
@@ -178,7 +230,7 @@ void can_update_bitrate(uint32_t instance, enum can_bitrate bitrate);
  * @brief Get the interrupt flags(iflag1 | (iflag2<<32))
  *
  * @param   instance	the FlexCAN instance number.
- * 
+ *
  * @return 	interrupt flags(ie, iflag1 | (iflag2<<32))
  */
 uint64_t can_mb_int_flag(uint32_t instance);
@@ -187,9 +239,17 @@ uint64_t can_mb_int_flag(uint32_t instance);
  * @brief Clear the interrupt flag of the message box
  *
  * @param   instance	the FlexCAN instance number.
- * @param   mbID	Index of the message box 
+ * @param   mbID	Index of the message box
  */
 void can_mb_int_ack(uint32_t instance, uint32_t mbID);
+
+/*!
+ * @brief Clear the fifo interrupt flag of the message box
+ *
+ * @param   instance	the FlexCAN instance number.
+ * @param   mbID	Index of the message box
+ */
+void freertos_can_int_ack(uint32_t instance,uint32_t  val);
 
 //! @name Board support functions
 //!

@@ -131,12 +131,31 @@ void epit_setup_interrupt(uint32_t instance, void (*irq_subroutine)(void), bool 
     uint32_t irq_id = EPIT_IRQS(instance);
 
     if (enableIt)
+    {
+        // register the IRQ sub-routine
+        register_interrupt_routine(irq_id, irq_subroutine);
+
+        // enable the IRQ
+        enable_interrupt(irq_id, CPU_0, 0);
+    }
+    else
+    {
+        // disable the IRQ
+        disable_interrupt(irq_id, CPU_0);
+    }
+}
+
+void freertos_epit_setup_interrupt(uint32_t instance, void (*irq_subroutine)(void), bool enableIt, uint32_t priority)
+{
+    uint32_t irq_id = EPIT_IRQS(instance);
+
+    if (enableIt)
     {    
         // register the IRQ sub-routine 
-        register_interrupt_routine(irq_id, irq_subroutine);
+        freertos_register_interrupt_routine(irq_id, irq_subroutine);
         
         // enable the IRQ 
-        enable_interrupt(irq_id, CPU_0, 0);
+        enable_interrupt(irq_id, CPU_0, priority);
     }
     else
     {
