@@ -32,6 +32,7 @@
 #include "board_io_expanders.h"
 #include "platform_init.h"
 #include "core/cortex_a9.h"
+#include "core/cache_l2c310.h"
 #include "core/mmu.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +46,17 @@ void platform_init(void)
 
 #ifndef DEBUG
     mmu_init();
+
+    /* enable L1 cache for mx6dq and mx6sdl */
+    arm_icache_enable();
+    arm_dcache_invalidate();
+    mmu_enable();
+    arm_dcache_enable();
+
+    // Enable L2 Cache
+    _l2c310_cache_setup();
+    _l2c310_cache_invalidate();
+    _l2c310_cache_enable();
 
     // Map some SDRAM for DMA
 #if defined(BOARD_EVB)

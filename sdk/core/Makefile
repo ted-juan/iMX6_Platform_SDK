@@ -12,7 +12,8 @@ SOURCES = \
 	src/interrupt.c \
 	src/mmu.c \
 	src/startup.S \
-	src/vectors.S 
+	src/vectors.S \
+	src/cache_l2c310.c
 else
 SOURCES = \
 	src/abort_handler.c \
