@@ -75,6 +75,13 @@ else ifdef BOARD
 $(error Unknown board $(BOARD))
 endif
 
+# Debug uart port
+ifeq "$(UART_PORT)" "1"
+DEFINES += -DBOARD_HW_UART1
+else ifeq "$(UART_PORT)" "4"
+DEFINES += -DBOARD_HW_UART4
+endif
+
 # Board revision, defaults to a if not specified.
 ifndef BOARD_REVISION
 BOARD_REVISION = a

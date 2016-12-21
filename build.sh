@@ -8,5 +8,8 @@ export CROSS_COMPILE=arm-none-eabi-
 export CROSS_LIB1=${TOOLCHAIN_PATH}arm-none-eabi/lib
 export CROSS_LIB2=${TOOLCHAIN_PATH}lib/gcc/arm-none-eabi/5.4.1
 
+# select debug port 1 or 4
+export UART_PORT="1"
+
 #./tools/build_sdk -t mx6sdl -b evb -rev a -r all
 ./tools/build_sdk -t mx6sdl -b weintek -rev a -a freertos
