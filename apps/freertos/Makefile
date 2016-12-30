@@ -180,7 +180,6 @@ endif
 define SOURCES
     $(APPS_ROOT)/common/platform_init.c
     $(APPS_ROOT)/common/print_clock_info.c
-    $(APPS_ROOT)/common/print_version.c
     $(APPS_ROOT)/common/ivt.c
     src/imx6/imx6_main.c
     src/imx6/imx6_timer.c
@@ -188,7 +187,19 @@ define SOURCES
     src/imx6/imx6_vectors.c
     src/imx6/imx6_gpio.c
     src/imx6/imx6_can.c
-    src/imx6/imx6_gic.c
+    src/armv7/gic.c
+    src/armv7/abort_handler.c
+    src/armv7/cache_l2c310.c
+    src/armv7/cortexA9.s
+    src/armv7/interrupt.c
+    src/armv7/startup.S
+    src/armv7/arm_abort.S
+    src/armv7/armv7_cache.c
+    src/armv7/ccm_pll.c
+    src/armv7/mmu.c
+    src/util/system_util.c
+    src/util/text_color.c
+    src/util/runtime_support.c
 	$(RTOS_PATH)/tasks.c
 	$(RTOS_PATH)/queue.c
 	$(RTOS_PATH)/list.c

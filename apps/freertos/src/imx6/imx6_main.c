@@ -248,8 +248,6 @@ INT32S main(void)
     /* hardware initialize */
     platform_init();
 
-    print_version();
-
     show_freq();
     show_ddr_config();
 
