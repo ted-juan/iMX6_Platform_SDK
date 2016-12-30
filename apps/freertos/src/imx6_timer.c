@@ -91,11 +91,10 @@ registers have been saved.  If the function is called vApplicationIRQHandler()
 then it will be called without first having saved the FPU registers.  See
 http://www.freertos.org/Using-FreeRTOS-on-Cortex-A-Embedded-Processors.html for
 more information */
-void vApplicationFPUSafeIRQHandler( uint32_t ulICCIAR )
+void vApplicationFPUSafeIRQHandler( uint32_t vectNum )
 {
-    // vectNum = RESERVED[31:13] | CPUID[12:10] | INTERRUPT_ID[9:0]
+    // ulICCIAR = vectNum = RESERVED[31:13] | CPUID[12:10] | INTERRUPT_ID[9:0]
     // send ack and get ID source
-    uint32_t vectNum = gic_read_irq_ack();
 
     /* Re-enable interrupts. */
     __asm ( "cpsie i" );

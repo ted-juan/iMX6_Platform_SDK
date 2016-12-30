@@ -234,7 +234,7 @@ void vClearTickInterrupt( void );
 
 /* The following constant describe the hardware */
 #define configINTERRUPT_CONTROLLER_BASE_ADDRESS 		( 0xA01000 )
-#define configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET ( -0x1000 )
+#define configINTERRUPT_CONTROLLER_CPU_INTERFACE_OFFSET (   -0xF00 ) /* 0xA00100 */
 #define configUNIQUE_INTERRUPT_PRIORITIES				32
 
 
