@@ -123,11 +123,6 @@ ifneq "$(filter evb sabre_ai sabre_lite, $(BOARD))" ""
         $(SDK_LIB_ROOT)/drivers/usb/test
 endif
 
-# Tests that are only available on the sabre_ai board.
-ifeq "$(BOARD)" "weintek"
-    SUBDIRS += \
-        $(SDK_LIB_ROOT)/drivers/flexcan/test
-endif
 
 # Tests that are only available on the sabre_ai board.
 ifeq "$(BOARD)" "sabre_ai"

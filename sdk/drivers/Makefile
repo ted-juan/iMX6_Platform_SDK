@@ -27,6 +27,20 @@ ifeq "$(TARGET)" "mx6sl"
 is_sdl_or_sl = 1
 endif
 
+ifeq "$(FREERTOS)" "1"
+define SOURCES
+cpu_utility/src/cpu_get_cores.c
+cpu_utility/src/cpu_multicore.c
+timer/src/epit.c
+timer/src/timer.c
+gpio/src/gpio.c
+gpio/src/gpio_pin.cpp
+uart/src/imx_uart.c
+gpio/src/imx6sdl_gpio_map.c
+endef
+
+else
+
 define SOURCES
 accelerometer/src/mma8451.c
 board_id/src/board_id.c
@@ -65,12 +79,12 @@ usdhc/src/usdhc_host.c
 usdhc/src/usdhc_mmc.c
 usdhc/src/usdhc_sd.c
 usdhc/src/usdhc.c
-audio/src/cs42888.c 
-audio/src/imx_audmux.c 
-audio/src/imx_spdif.c 
-audio/src/imx-ssi.c 
-audio/src/snd_card.c 
-audio/src/wm8962.c 
+audio/src/cs42888.c
+audio/src/imx_audmux.c
+audio/src/imx_spdif.c
+audio/src/imx-ssi.c
+audio/src/snd_card.c
+audio/src/wm8962.c
 endef
 
 # Only the MX6DQ has SATA.
@@ -151,4 +165,5 @@ SOURCES += gpio/src/imx6sl_gpio_map.c
 endif
 
 
+endif #FREERTOS
 include $(SDK_ROOT)/mk/targets.mk

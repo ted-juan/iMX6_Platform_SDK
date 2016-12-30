@@ -35,7 +35,6 @@
 #include "mmu.h"
 #include "sdk_version.h"
 #include "print_clock_info.h"
-#include "print_version.h"
 #include "cpu_utility/cpu_utility.h"
 #include "FreeRTOS.h"
 #include "task.h"
