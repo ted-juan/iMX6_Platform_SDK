@@ -207,15 +207,16 @@ void gic_write_end_of_irq(uint32_t irqID)
 
 void gic_init(void)
 {
+    int i;
     gicd_t * gicd = gic_get_gicd();
 
     // First disable the distributor.
     gic_enable(false);
 
-    // Clear all pending interrupts.
-    int i;
+    // Disable and clear all pending interrupts.
     for (i = 0; i < 32; ++i)
     {
+        gicd->ICENABLERn[i] = 0xffffffff;
         gicd->ICPENDRn[i] = 0xffffffff;
     }
 
