@@ -182,13 +182,13 @@ define SOURCES
     $(APPS_ROOT)/common/print_clock_info.c
     $(APPS_ROOT)/common/print_version.c
     $(APPS_ROOT)/common/ivt.c
-    src/imx6_main.c
-    src/imx6_timer.c
-    src/imx6_hook.c
-    src/imx6_vectors.c
-    src/imx6_gpio.c
-    src/imx6_can.c
-    src/imx6_gic.c
+    src/imx6/imx6_main.c
+    src/imx6/imx6_timer.c
+    src/imx6/imx6_hook.c
+    src/imx6/imx6_vectors.c
+    src/imx6/imx6_gpio.c
+    src/imx6/imx6_can.c
+    src/imx6/imx6_gic.c
 	$(RTOS_PATH)/tasks.c
 	$(RTOS_PATH)/queue.c
 	$(RTOS_PATH)/list.c
