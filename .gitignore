@@ -17,6 +17,7 @@
 *.hex
 *.bin
 *.elf
+*.xml
 
 #
 # Top-level generic files
