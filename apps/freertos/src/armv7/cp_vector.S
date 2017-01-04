@@ -5,6 +5,8 @@
     .global vectors
     .global __ram_vectors_start
     .global __ram_vectors_end
+    .global  __cs3_region_start_ram
+    .global __cs3_reset
     .global top_of_stacks
     .code 32
     .section ".startup","ax"
@@ -55,15 +57,21 @@ _cp_vector:
      /* copy the vector table into the RAM vectors
      * this assumes that the RAM vectors size is divisible by 3 words (12 bytes)
      */
-    ldr     r1,=__ram_vectors_start
-    ldr     r2,=__ram_vectors_end
+    ldr     r1,=__cs3_region_start_ram
+    ldr     r2,=__cs3_reset
     ldr     r3,=vectors
 1:  cmp     r1,r2
     ldmlt   r3!,{r4,r5,r6}
     stmlt   r1!,{r4,r5,r6}
     blt     1b
-    bx      lr 
-    
+
+	/* Set VBAR to the vector table that contains the FreeRTOS handlers. */
+	ldr	r0, =__cs3_region_start_ram
+	mcr	p15, 0, r0, c12, c0, 0
+	dsb
+	isb
+	bx lr   
+
     .cantunwind
     .fnend
     .endfunc    @ _cp_vector()
