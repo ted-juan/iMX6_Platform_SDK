@@ -233,6 +233,7 @@ void cpu1_entry(void * arg)
 
 #endif
 
+extern void  _cp_vector();
 
 /*!
  * main function that decides which tests to run and prompts the user before
@@ -242,8 +243,11 @@ void cpu1_entry(void * arg)
 INT32S main(void)
 {
 	INT32S ret;
-    INT32U cpu_id = cpu_get_current();
+    INT32U cpu_id;
 
+    _cp_vector();
+
+    cpu_id = cpu_get_current();
     /* hardware initialize */
     platform_init();
 
