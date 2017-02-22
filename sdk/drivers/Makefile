@@ -37,6 +37,8 @@ gpio/src/gpio.c
 gpio/src/gpio_pin.cpp
 uart/src/imx_uart.c
 gpio/src/imx6sdl_gpio_map.c
+enet/src/enet_drv.c
+enet/test/enet_test.c
 endef
 
 else

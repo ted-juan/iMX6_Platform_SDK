@@ -54,7 +54,7 @@ extern void multicore_test(void);
 extern void flexcan_test(void);
 extern void imx6_can_test(void);
 extern int CAN_Init(void);
-
+extern int enet_test(void);
 
 xQueueHandle xMsgQueue;
 SemaphoreHandle_t xSemaphore = NULL;
@@ -270,6 +270,7 @@ INT32S main(void)
   	while(1);
 #endif
 
+    enet_test();
     //Run the unit test function.
     //multicore_test();
     //epit_test();

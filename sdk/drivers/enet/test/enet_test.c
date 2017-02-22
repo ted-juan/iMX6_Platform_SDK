@@ -44,7 +44,8 @@
 #elif defined(BOARD_EVB) || defined(BOARD_SABRE_LITE)
 #define ENET_PHY_ADDR 0
 #else
-#Error Unknown ENET_PHY_ADDR
+#define ENET_PHY_ADDR 3
+//#Error Unknown ENET_PHY_ADDR
 #endif
 
 static imx_enet_priv_t enet0;

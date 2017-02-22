@@ -324,6 +324,9 @@ void imx_enet_phy_init(imx_enet_priv_t * dev)
             printf("ENET KSZ9021RN PHY: ID=%lx\n", id);
             enet_phy_rework_ksz9021(dev);
             break;
+        case PHY_KSZ9031RN_ID:
+            printf("ENET KSZ9031 PHY: ID=%lx\n", id);
+            break;
         default:
             printf("[Warning] ENET not connect right PHY: ID=%lx\n", id);
     }
@@ -339,18 +342,22 @@ void imx_enet_phy_init(imx_enet_priv_t * dev)
         imx_enet_mii_read(dev->enet_reg, dev->phy_addr, PHY_CTRL_REG, &value);
     } while (value & PHY_CTRL_RESET);
     
+#if 1	
+#if 1
 	/* restart auto-negotiation */
-#if 1	
-#if 1	
 	imx_enet_mii_read(dev->enet_reg, dev->phy_addr, PHY_CTRL_REG, &value);
-	value |= 0x1200;
+	value |= 0x1340;
 	imx_enet_mii_write(dev->enet_reg, dev->phy_addr, PHY_CTRL_REG, value);
 #else
-    value = 0x8100;
-    imx_enet_mii_write(dev->enet_reg, dev->phy_addr, 0x1f, value);
+	/* PHY is 1000Base-T full/half-duplex capable */
+	value = 0x300;
+    imx_enet_mii_write(dev->enet_reg, dev->phy_addr, 0x9, value);
 #endif
+#else
+    //value = 0x8100;
+    //imx_enet_mii_write(dev->enet_reg, dev->phy_addr, 0x1f, value);
 #endif
-    
+    hal_delay_us(2000000);
     // Read current PHY status.
     imx_enet_get_phy_status(dev);
 }
