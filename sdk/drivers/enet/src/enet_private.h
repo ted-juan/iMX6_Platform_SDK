@@ -37,7 +37,7 @@
 // Definitions
 ////////////////////////////////////////////////////////////////////////////////
 
-#define     NUM_OF_ETH_DEVS 1
+#define     NUM_OF_ETH_DEVS 3
 
 #define ENET_RX_FRAMES      8
 
