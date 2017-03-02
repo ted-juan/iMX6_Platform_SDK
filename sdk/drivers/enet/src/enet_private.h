@@ -37,7 +37,7 @@
 // Definitions
 ////////////////////////////////////////////////////////////////////////////////
 
-#define     NUM_OF_ETH_DEVS 3
+#define     NUM_OF_ETH_DEVS 1
 
 #define ENET_RX_FRAMES      8
 
@@ -126,6 +126,7 @@
 #define ENET_BD_TX_NUM  2
 
 #define BD_RX_ST_EMPTY 0x8000
+
 
 #define BD_RX_ST_WRAP  0x2000
 

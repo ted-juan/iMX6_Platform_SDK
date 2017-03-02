@@ -64,6 +64,12 @@ void platform_init(void)
 #elif defined(BOARD_SMART_DEVICE)
     mmu_map_l1_range(0x20000000, 0x20000000, 0x30000000, kNoncacheable, kShareable, kRWAccess);
 #endif
+
+#else
+    arm_dcache_flush();
+    arm_dcache_disable();
+    _l2c310_cache_flush();
+    _l2c310_cache_disable();
 #endif
 
     // Enable interrupts. Until this point, the startup code has left interrupts disabled.

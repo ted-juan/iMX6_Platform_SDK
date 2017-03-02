@@ -124,21 +124,18 @@ int imx_enet_mii_write(volatile hw_enet_t * enet_reg, unsigned char phy_addr,
 /*!
  * The function initializes the description buffer for receiving or transmitting.
  */
-static void imx_enet_bd_init(imx_enet_priv_t * dev, int dev_idx)
+static void imx_enet_bd_init(imx_enet_priv_t *dev)
 {
     int i;
     imx_enet_bd_t *p;
     imx_enet_bd_t *rx_bd_base = imx_enet_rx_bd, *tx_bd_base = imx_enet_tx_bd;
-
-    rx_bd_base += (dev_idx * ENET_BD_RX_NUM);
-    tx_bd_base += (dev_idx * ENET_BD_TX_NUM);
 
     p = dev->rx_bd = (imx_enet_bd_t *) rx_bd_base;
 
     for (i = 0; i < ENET_BD_RX_NUM; i++, p++) {
         p->status = BD_RX_ST_EMPTY;
         p->length = 0;
-        p->data = (unsigned char *)imx_enet_rx_buf[i + dev_idx * ENET_BD_RX_NUM];
+        p->data = (unsigned char *)imx_enet_rx_buf[i];
         //printf("rx bd %x, buffer is %x\n", (unsigned int)p, (unsigned int)p->data);
     }
 
@@ -150,7 +147,7 @@ static void imx_enet_bd_init(imx_enet_priv_t * dev, int dev_idx)
     for (i = 0; i < ENET_BD_TX_NUM; i++, p++) {
         p->status = 0;
         p->length = 0;
-        p->data = (unsigned char *)imx_enet_tx_buf[i + dev_idx * ENET_BD_TX_NUM];
+        p->data = (unsigned char *)imx_enet_tx_buf[i];
         //printf("tx bd %x, buffer is %x\n", (unsigned int)p, (unsigned int)p->data);
     }
 
@@ -180,7 +177,7 @@ static void imx_enet_chip_init(imx_enet_priv_t * dev)
     /*
      * setup the MII gasket for RMII mode
      */
-    enet_reg->RCR.U = (enet_reg->RCR.U & ~(0x0000003F)) | ENET_RCR_RGMII_EN | ENET_RCR_FCE | ENET_RCR_PROM;
+    enet_reg->RCR.U = (enet_reg->RCR.U & ~(0x0000003F)) | ENET_RCR_RGMII_EN | ENET_RCR_FCE ;
     enet_reg->TCR.U |= ENET_TCR_FDEN;
     enet_reg->MIBC.U |= ENET_MIB_DISABLE;
 
@@ -191,7 +188,10 @@ static void imx_enet_chip_init(imx_enet_priv_t * dev)
 
     /*TODO:: Use MII_SPEED(IPG_CLK) to get the value */
 	ipg_clk = get_main_clock(IPG_CLK);
-    enet_reg->MSCR.U = (enet_reg->MSCR.U & (~0x7e)) | (((ipg_clk + 499999) / 5000000) << 1); 
+    enet_reg->MSCR.U = (enet_reg->MSCR.U & (~0x7e)) | (((ipg_clk + 499999) / 5000000) << 1);
+
+    /* Set Opcode/Pause Duration Register */
+    enet_reg->OPD.U = 0x00010020;
 
     /*Enable ETHER_EN */
     enet_reg->MRBR.U = 2048 - 16;
@@ -203,7 +203,7 @@ static void imx_enet_chip_init(imx_enet_priv_t * dev)
 	enet_reg->ECR.U |= (0x1 << 8); //BM_ENET_ECR_DBSWP;
 	/* set ENET tx at store and forward mode */
 	enet_reg->TFWR.U |= BM_ENET_TFWR_STRFWD; //(0x1 << 8);
-#endif	
+#endif
 }
 
 void enet_phy_rework_ar8031(imx_enet_priv_t * dev)
@@ -280,11 +280,11 @@ void enet_phy_rework_ar8031(imx_enet_priv_t * dev)
 void enet_phy_rework_ksz9021(imx_enet_priv_t * dev)
 {
 	imx_enet_mii_write(dev->enet_reg, dev->phy_addr, 0x9, 0x1c00);
-	
+
 	/* min rx data delay */
 	imx_enet_mii_write(dev->enet_reg, dev->phy_addr, 0x0b, 0x8105);
 	imx_enet_mii_write(dev->enet_reg, dev->phy_addr, 0x0c, 0x0000);
-	
+
 	/* max rx/tx clock delay, min rx/tx control delay */
 	imx_enet_mii_write(dev->enet_reg, dev->phy_addr, 0x0b, 0x8104);
 	imx_enet_mii_write(dev->enet_reg, dev->phy_addr, 0x0c, 0xf0f0);
@@ -298,14 +298,14 @@ void imx_enet_phy_init(imx_enet_priv_t * dev)
 {
     unsigned short value = 0;
     unsigned long id = 0;
-	
+
 	// Read PHY ID registers.
     imx_enet_mii_read(dev->enet_reg, dev->phy_addr, PHY_IDENTIFY_1, &value);
     id = (value & PHY_ID1_MASK) << PHY_ID1_SHIFT;
     imx_enet_mii_read(dev->enet_reg, dev->phy_addr, PHY_IDENTIFY_2, &value);
     id |= (value & PHY_ID2_MASK) << PHY_ID2_SHIFT;
     id &= 0xfffffff0; // mask off lower 4 bits
-    
+
     switch (id)
     {
         case 0x00540088: // ?? PHY
@@ -336,13 +336,13 @@ void imx_enet_phy_init(imx_enet_priv_t * dev)
 	imx_enet_mii_read(dev->enet_reg, dev->phy_addr, PHY_CTRL_REG, &value);
 	value |= PHY_CTRL_RESET;
 	imx_enet_mii_write(dev->enet_reg, dev->phy_addr, PHY_CTRL_REG, value);
-    
+
     // Wait for reset to complete.
     do {
         imx_enet_mii_read(dev->enet_reg, dev->phy_addr, PHY_CTRL_REG, &value);
     } while (value & PHY_CTRL_RESET);
-    
-#if 1	
+
+#if 1
 #if 1
 	/* restart auto-negotiation */
 	imx_enet_mii_read(dev->enet_reg, dev->phy_addr, PHY_CTRL_REG, &value);
@@ -365,10 +365,10 @@ void imx_enet_phy_init(imx_enet_priv_t * dev)
 uint32_t imx_enet_get_phy_status(imx_enet_priv_t * dev)
 {
     uint16_t value;
-    
+
     // Reset saved status.
     dev->status = 0;
-    
+
     imx_enet_mii_read(dev->enet_reg, dev->phy_addr, PHY_STATUS_REG, &value);
     printf("enet phy status %0d: %04x\n", dev->phy_addr, value);    //  0x7809 or 0x782d
 
@@ -380,7 +380,7 @@ uint32_t imx_enet_get_phy_status(imx_enet_priv_t * dev)
     {
         dev->status &= ~ENET_STATUS_LINK_ON;
     }
-    
+
 	if (dev->phy_id == PHY_AR8031_ID)
 	{
 #if 0
@@ -436,8 +436,8 @@ uint32_t imx_enet_get_phy_status(imx_enet_priv_t * dev)
 			dev->status |= ENET_STATUS_FULL_DPLX;
 		else
 			dev->status &= ~ENET_STATUS_FULL_DPLX;
-	}	
-	
+	}
+
 //     printf("ENET %0d: [ %s ] [ %s ] [ %s ]:\n", dev->phy_addr,
 //            (dev->status & ENET_STATUS_FULL_DPLX) ? "FULL_DUPLEX" : "HALF_DUPLEX",
 //            (dev->status & ENET_STATUS_LINK_ON) ? "connected" : "disconnected",
@@ -450,7 +450,7 @@ uint32_t imx_enet_get_phy_status(imx_enet_priv_t * dev)
 void imx_enet_phy_enable_external_loopback(imx_enet_priv_t * dev)
 {
     uint16_t val;
-    
+
     if (dev->phy_id == PHY_AR8031_ID)
     {
         // Disable hibernate
@@ -565,7 +565,7 @@ int imx_enet_init(imx_enet_priv_t * dev, unsigned long reg_base, int phy_addr)
     dev->status = 0;
     dev->phy_addr = phy_addr;   /* 0 or 1 */
 
-    imx_enet_bd_init(dev, phy_addr);
+    imx_enet_bd_init(dev);
 
     imx_enet_chip_init(dev);
 
@@ -594,7 +594,8 @@ void imx_enet_start(imx_enet_priv_t * dev, unsigned char *enaddr)
     imx_enet_set_mac_address(dev->enet_reg, enaddr);
 
     dev->tx_busy = 0;
-    dev->enet_reg->ECR.U |= ENET_ETHER_EN | ENET_ETHER_SPEED_1000M | ENET_ETHER_LITTLE_ENDIAN;
+    //dev->enet_reg->ECR.U |= ENET_ETHER_EN | ENET_ETHER_SPEED_1000M | ENET_ETHER_LITTLE_ENDIAN;
+    dev->enet_reg->ECR.U |= ENET_ETHER_EN | ENET_ETHER_LITTLE_ENDIAN;
     dev->enet_reg->RDAR.U |= ENET_RX_TX_ACTIVE;
 }
 
